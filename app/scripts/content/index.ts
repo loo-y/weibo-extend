@@ -1,0 +1,3 @@
+const contentRun = async () => {}
+
+contentRun()

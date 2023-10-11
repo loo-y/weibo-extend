@@ -24,6 +24,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# bun
+bun.lockb
+
 # local env files
 .env*.local
 

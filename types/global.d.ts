@@ -17,3 +17,5 @@ interface Chrome {
 // 扩展全局对象类型定义
 declare const chrome: Chrome;
 
+// weibo token
+declare var xsrfToken: string;

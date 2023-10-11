@@ -1,16 +1,52 @@
 // @ts-ignore
-import $j$ from 'jquery'
+import $ from 'jquery'
+// @ts-ignore
+import Cookies from 'js-cookie'
 
 const contentRun = async () => {
-    watchElement({
-        targetSelector: '.wbpro-list',
-        handleTarget: element => {
-            console.log(`target node`, element)
-        },
+    // watchElement({
+    //     targetSelector: '.wbpro-list',
+    //     handleTarget: element => {
+    //         console.log(`target node`, element)
+    //     },
+    // })
+
+    $(document).on('mouseover', '.wbpro-list', (event: $.Event) => {
+        const targetElement = event.currentTarget as HTMLElement
+        console.log(`$(targetElement)`, targetElement)
+
+        const item1 = $(targetElement).find('.item1')
+        const item2List = $(targetElement).find('.item2')
+        const item1IconBox = item1.find(`.opt.woo-box-flex`)
+        if (item1IconBox.find('.weibo-extend-black').length < 1) {
+            const weiboExtendBlackBtn = $(`<div>`)
+                .text('拉黑此条点赞的所有人')
+                .addClass(
+                    'weibo-extend-black wbpro-iconbed woo-box-flex woo-box-alignCenter woo-box-justifyCenter optHover'
+                )
+                .prependTo(item1IconBox)
+            weiboExtendBlackBtn.click(() => {
+                fetch('https://weibo.com/ajax/statuses/filterUser', {
+                    headers: {
+                        accept: 'application/json, text/plain, */*',
+                        'x-requested-with': 'XMLHttpRequest',
+                        'x-xsrf-token': globalThis.xsrfToken,
+                        // "client-version": "v2.43.44",
+                        'content-type': 'application/json;charset=UTF-8',
+                    },
+                    body: '{"uid":6408587650,"status":0,"interact":0,"follow":0}',
+                    method: 'POST',
+                })
+            })
+        }
     })
 }
-
-contentRun()
+window.addEventListener('load', () => {
+    const xsrfToken = Cookies.get(`XSRF-TOKEN`)
+    globalThis.xsrfToken = xsrfToken
+    contentRun()
+    console.log(`Cookies,`)
+})
 
 const watchElement = ({
     targetSelector,

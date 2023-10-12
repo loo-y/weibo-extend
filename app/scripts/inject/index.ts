@@ -1,3 +1,11 @@
+import { hookXHR, hookXHRSend } from '../utils/hooks'
+
+const injectFunction = () => {
+    // hookXHR()
+    hookXHRSend()
+}
+
+injectFunction()
 ;(function (history) {
     var originalPushState = history.pushState
 

@@ -73,8 +73,12 @@ export const hookXHROpen = () => {
     }
 }
 
+interface IHookXHRSendProps {
+    responseReplaceList: { urlMatch: string; responseModify: (responseText: string) => string }[]
+}
 // 劫持 XHR 调用 Send
-export const hookXHRSend = () => {
+export const hookXHRSend = ({ responseReplaceList }: IHookXHRSendProps) => {
+    if (_.isEmpty(responseReplaceList)) return
     // 劫持 XHR 调用
     // 保存原始的 XMLHttpRequest 构造函数
     const originalXHR = window.XMLHttpRequest
@@ -97,31 +101,18 @@ export const hookXHRSend = () => {
                 if (xhr.readyState === 4) {
                     // 检查状态码是否为 200
                     if (xhr.status === 200) {
-                        // 检查当前请求的 URL 是否与目标 URL 匹配
-                        if (xhr.responseURL.includes(`buildComments`)) {
-                            console.log(`xhr.data`, xhr.data)
-                            // 替换返回内容
-                            var responseText = xhr.responseText
-
-                            let responseJson = JSON.parse(responseText)
-                            console.log(`responseText`, responseJson, responseJson?.data?.length)
-                            if (responseJson?.data?.length) {
-                                responseJson.data = _.map(responseJson.data, dataItem => {
-                                    const { source = '', idstr } = dataItem || {}
-
-                                    return {
-                                        ...dataItem,
-                                        originalSource: source,
-                                        source: `${source}, cid-${idstr}`,
-                                    }
+                        _.each(responseReplaceList, ({ urlMatch, responseModify }) => {
+                            // 检查当前请求的 URL 是否与目标 URL 匹配
+                            if (xhr.responseURL.includes(urlMatch)) {
+                                console.log(`xhr.data`, xhr.data)
+                                // 替换返回内容
+                                const responseText = xhr.responseText
+                                Object.defineProperty(xhr, 'responseText', {
+                                    writable: true,
                                 })
-                                console.log(`responseJson.data`, responseJson.data)
+                                xhr.responseText = responseModify(responseText)
                             }
-                            Object.defineProperty(xhr, 'responseText', {
-                                writable: true,
-                            })
-                            xhr.responseText = JSON.stringify(responseJson)
-                        }
+                        })
                     } else {
                         // 处理其他状态码的情况
                         console.log('请求失败，状态码：' + xhr.status)

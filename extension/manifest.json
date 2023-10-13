@@ -30,6 +30,7 @@
     "content_scripts": [
         {
           "js": ["content-script.js"],
+          "run_at": "document_idle",
           "matches": [
             "https://weibo.com/*",
             "https://*.weibo.com/*"

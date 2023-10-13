@@ -3,6 +3,23 @@ import $ from 'jquery'
 // @ts-ignore
 import Cookies from 'js-cookie'
 
+function injectCustomScript() {
+    var scriptElement = document.createElement('script')
+    var extensionId = chrome.runtime.id
+    console.log(extensionId)
+    scriptElement.src = `chrome-extension://${extensionId}/inject-script.js`
+    // document.documentElement.appendChild(scriptElement)
+    // document.head.appendChild(scriptElement);
+
+    // 获取页面中所有的 <script> 元素
+    const scriptElementsInPage = document.getElementsByTagName('script')
+    const firstScriptElement = scriptElementsInPage[0]
+    // 插入新的 <script> 元素到第一个 <script> 元素之前
+    firstScriptElement?.parentNode?.insertBefore(scriptElement, firstScriptElement)
+}
+
+injectCustomScript()
+
 const contentRun = async () => {
     // watchElement({
     //     targetSelector: '.wbpro-list',
@@ -82,10 +99,4 @@ const watchElement = ({
 }
 
 // 监听页面的加载完成事件, 注入自定义脚本到页面中
-window.addEventListener('load', function injectCustomScript() {
-    var script = document.createElement('script')
-    var extensionId = chrome.runtime.id
-    console.log(extensionId)
-    script.src = `chrome-extension://${extensionId}/inject-script.js`
-    document.documentElement.appendChild(script)
-})
+// window.addEventListener('load', injectCustomScript)

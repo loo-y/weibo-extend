@@ -1,4 +1,4 @@
-import { hookXHR, hookXHRSend } from '../utils/hooks'
+import { hookXHRSend } from '../utils/hooks'
 
 const injectFunction = () => {
     // hookXHR()

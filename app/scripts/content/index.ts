@@ -9,16 +9,16 @@ function injectCustomScript() {
     console.log(extensionId)
     scriptElement.src = `chrome-extension://${extensionId}/inject-script.js`
     // document.documentElement.appendChild(scriptElement)
-    // document.head.appendChild(scriptElement);
+    document.head?.appendChild(scriptElement)
 
     // 获取页面中所有的 <script> 元素
     const scriptElementsInPage = document.getElementsByTagName('script')
     const firstScriptElement = scriptElementsInPage[0]
     // 插入新的 <script> 元素到第一个 <script> 元素之前
-    firstScriptElement?.parentNode?.insertBefore(scriptElement, firstScriptElement)
+    // firstScriptElement?.parentNode?.insertBefore(scriptElement, firstScriptElement)
 }
 
-injectCustomScript()
+// injectCustomScript()
 
 const contentRun = async () => {
     // watchElement({

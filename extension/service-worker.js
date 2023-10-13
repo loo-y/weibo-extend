@@ -17,3 +17,13 @@ chrome.action.onClicked.addListener(async tab => {
         // inject script in page first
     }
 })
+
+// hook by background service-worker
+chrome.scripting.registerContentScripts([{
+    id: "weibo-extend-inject",
+    matches: ["http://*/*", "https://*/*"],
+    js: ["inject-script.js"],
+    runAt: "document_start",
+    world: "MAIN",
+    allFrames: true
+}])

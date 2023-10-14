@@ -27,3 +27,6 @@ export const weiboExtendClassNames = {
     blockLikeUsers: `${baseClassName}-block-like-users`,
     commentId: `${baseClassName}-commentid`,
 }
+
+// 限制最多获取多少页，防止请求过多被封
+export const LimitPageOflikeUserFetch = 10

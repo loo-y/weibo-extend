@@ -5,6 +5,7 @@ import _ from 'lodash'
 import Cookies from 'js-cookie'
 import { fetchToBlockUser, fetchToGetLikeUsers } from '../utils/fetches'
 import { weiboExtendClassNames } from '../utils/constants'
+import { showUserList } from '../utils/doms'
 
 function injectCustomScript() {
     var scriptElement = document.createElement('script')
@@ -41,7 +42,11 @@ const contentRun = async () => {
                 )
                 .prependTo(item1IconBox)
             weiboExtendBlackBtn.click(async () => {
-                await fetchToGetLikeUsers({ commentId: commentId })
+                const likeUsers = await fetchToGetLikeUsers({ commentId: commentId })
+                console.log(`likeUsers`, likeUsers)
+                showUserList({
+                    userList: likeUsers?.userList,
+                })
             })
         }
     })

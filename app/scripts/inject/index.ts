@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { hookXHRSend, hookHistory } from '../utils/hooks'
 import { homePageTabList } from '../utils/constants'
+import { weiboExtendClassNames } from '../utils/constants'
 
 const responseReplaceList = [
     {
@@ -12,12 +13,13 @@ const responseReplaceList = [
                 console.log(`responseText`, responseJson, responseJson?.data?.length)
                 if (responseJson?.data?.length) {
                     responseJson.data = _.map(responseJson.data, dataItem => {
-                        const { source = '', idstr } = dataItem || {}
+                        const { source = '', text, idstr } = dataItem || {}
 
                         return {
                             ...dataItem,
                             originalSource: source,
-                            source: `${source}, cid-${idstr}`,
+                            // source: `${source}, <span>cid-${idstr}</span>`,
+                            text: `${text}<span class="${weiboExtendClassNames.base} ${weiboExtendClassNames.commentId}" data-cid=${idstr}></span>`,
                         }
                     })
                 }
@@ -38,7 +40,7 @@ const responseReplaceList = [
                     responseJson.data = {
                         ...responseJson.data,
                         origin_block_me: responseJson.data.block_me,
-                        block_me: undefined,
+                        // block_me: undefined,
                         blockText: '',
                         tabList: homePageTabList,
                     }

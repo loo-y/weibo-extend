@@ -1,7 +1,10 @@
 // @ts-ignore
 import $ from 'jquery'
+import _ from 'lodash'
 // @ts-ignore
 import Cookies from 'js-cookie'
+import { fetchToBlockUser, fetchToGetLikeUsers } from '../utils/fetchs'
+import { weiboExtendClassNames } from '../utils/constants'
 
 function injectCustomScript() {
     var scriptElement = document.createElement('script')
@@ -18,42 +21,27 @@ function injectCustomScript() {
     // firstScriptElement?.parentNode?.insertBefore(scriptElement, firstScriptElement)
 }
 
-// injectCustomScript()
-
 const contentRun = async () => {
-    // watchElement({
-    //     targetSelector: '.wbpro-list',
-    //     handleTarget: element => {
-    //         console.log(`target node`, element)
-    //     },
-    // })
-
+    // console.log(`globalThis.xsrfToken`, globalThis.xsrfToken)
+    const { base: WEC_base, blockLikeUsers: WEC_blockLikeUsers } = weiboExtendClassNames
     $(document).on('mouseover', '.wbpro-list', (event: $.Event) => {
         const targetElement = event.currentTarget as HTMLElement
-        console.log(`$(targetElement)`, targetElement)
+        // console.log(`$(targetElement)`, targetElement)
 
         const item1 = $(targetElement).find('.item1')
         const item2List = $(targetElement).find('.item2')
-        const item1IconBox = item1.find(`.opt.woo-box-flex`)
-        if (item1IconBox.find('.weibo-extend-black').length < 1) {
+        const item1In = item1.find(`.item1in`)
+        const item1IconBox = item1In.find(`.opt.woo-box-flex`)
+        if (item1IconBox.find(`.${WEC_blockLikeUsers}`).length < 1) {
+            const commentId = item1In.find(`.${weiboExtendClassNames.commentId}`)?.data('cid') || ''
             const weiboExtendBlackBtn = $(`<div>`)
-                .text('拉黑此条点赞的所有人')
+                .text('拉黑点赞用户')
                 .addClass(
-                    'weibo-extend-black wbpro-iconbed woo-box-flex woo-box-alignCenter woo-box-justifyCenter optHover'
+                    `${WEC_base} ${WEC_blockLikeUsers} wbpro-iconbed woo-box-flex woo-box-alignCenter woo-box-justifyCenter optHover`
                 )
                 .prependTo(item1IconBox)
-            weiboExtendBlackBtn.click(() => {
-                fetch('https://weibo.com/ajax/statuses/filterUser', {
-                    headers: {
-                        accept: 'application/json, text/plain, */*',
-                        'x-requested-with': 'XMLHttpRequest',
-                        'x-xsrf-token': globalThis.xsrfToken,
-                        // "client-version": "v2.43.44",
-                        'content-type': 'application/json;charset=UTF-8',
-                    },
-                    body: '{"uid":6408587650,"status":0,"interact":0,"follow":0}',
-                    method: 'POST',
-                })
+            weiboExtendBlackBtn.click(async () => {
+                await fetchToGetLikeUsers({ commentId: commentId })
             })
         }
     })
@@ -64,39 +52,6 @@ window.addEventListener('load', () => {
     contentRun()
     console.log(`Cookies,`)
 })
-
-const watchElement = ({
-    targetSelector,
-    handleTarget,
-}: {
-    targetSelector: string
-    handleTarget: (element: any) => void
-}) => {
-    if (!targetSelector) return
-
-    // 创建一个 MutationObserver 实例
-    const observer = new MutationObserver((mutationsList, observer) => {
-        // 遍历每个变化记录
-        for (let mutation of mutationsList) {
-            // 检查添加的节点是否匹配目标选择器
-            if (mutation.addedNodes) {
-                // @ts-ignore
-                for (let node of mutation.addedNodes) {
-                    if (
-                        node.matches &&
-                        (node.matches(targetSelector) || node.querySelectorAll(targetSelector)?.length)
-                    ) {
-                        // 目标元素出现
-                        handleTarget(node)
-                    }
-                }
-            }
-        }
-    })
-
-    // 监听整个文档的变化
-    observer.observe(document, { childList: true, subtree: true })
-}
 
 // 监听页面的加载完成事件, 注入自定义脚本到页面中
 // window.addEventListener('load', injectCustomScript)

@@ -112,11 +112,7 @@ export const hookXHROpen = () => {
                         if (responseJson?.data?.length) {
                             responseJson.data = _.map(responseJson.data, dataItem => {
                                 const { source = '', idstr } = dataItem || {}
-                                // if (source) {
-                                //     console.log(`idstr`, source);
-                                //     dataItem.originalSource = source
-                                //     dataItem.source = `${source}, cid-${idstr}`
-                                // }
+
                                 return {
                                     ...dataItem,
                                     originalSource: source,

@@ -20,3 +20,10 @@ export const homePageTabList = [
         tabName: '文章',
     },
 ]
+
+const baseClassName = `weibo-extend`
+export const weiboExtendClassNames = {
+    base: baseClassName,
+    blockLikeUsers: `${baseClassName}-block-like-users`,
+    commentId: `${baseClassName}-commentid`,
+}

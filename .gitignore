@@ -48,4 +48,5 @@ package-lock.json
 # zip file
 *.zip
 
+# LICENSE
 *.LICENSE.txt

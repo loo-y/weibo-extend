@@ -3,7 +3,7 @@ import $ from 'jquery'
 import _ from 'lodash'
 // @ts-ignore
 import Cookies from 'js-cookie'
-import { fetchToBlockUser, fetchToGetLikeUsers } from '../utils/fetchs'
+import { fetchToBlockUser, fetchToGetLikeUsers } from '../utils/fetches'
 import { weiboExtendClassNames } from '../utils/constants'
 
 function injectCustomScript() {

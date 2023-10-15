@@ -8,7 +8,7 @@ export const showUserList = ({ userList }: { userList?: UserType[] }) => {
     const userShowList: string[] = _.map(userList, userInfo => {
         const { uid, avatar, title } = userInfo || {}
         return `
-            <div>
+            <div class="normal-js">
                 <img src="${avatar}" alt="${title}" />
                 <a href=${
                     /\d+/.test(uid) ? '//weibo.com/u/' + uid : '//weibo.com/' + uid

@@ -6,6 +6,7 @@ import Cookies from 'js-cookie'
 import { fetchToBlockUser, fetchToGetLikeUsers } from '../utils/fetches'
 import { weiboExtendClassNames } from '../utils/constants'
 import { showUserList } from '../utils/doms'
+import { XShowUserListR } from '../utils/domsR'
 
 function injectCustomScript() {
     var scriptElement = document.createElement('script')
@@ -47,6 +48,8 @@ const contentRun = async () => {
                 showUserList({
                     userList: likeUsers?.userList,
                 })
+
+                console.log(`showUserListR`, XShowUserListR({ userList: likeUsers?.userList || [] }))
             })
         }
     })

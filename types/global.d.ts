@@ -11,11 +11,11 @@ interface Event {
 }
 
 interface Chrome {
-    [index: string]: any,
+    [index: string]: any
 }
 
 // 扩展全局对象类型定义
-declare const chrome: Chrome;
+declare const chrome: Chrome
 
 // weibo token
-declare var xsrfToken: string;
+declare var xsrfToken: string

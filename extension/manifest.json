@@ -3,7 +3,7 @@
     "name": "weiboExtend",
     "description": "next extension",
     "version": "1.0",
-    "permissions": [ "activeTab", "scripting", "contextMenus", "tabs", "storage"],
+    "permissions": ["activeTab", "scripting", "contextMenus", "tabs", "storage"],
     "host_permissions": ["https://weibo.com/*", "https://*.weibo.com/*"],
     "icons": {
         "16": "icons/icon16.png",
@@ -23,18 +23,15 @@
     },
     "web_accessible_resources": [
         {
-          "resources": ["inject-script.js", "icons/icon38.png"],
-          "matches": ["https://weibo.com/*", "https://*.weibo.com/*"]
+            "resources": ["inject-script.js", "icons/icon38.png"],
+            "matches": ["https://weibo.com/*", "https://*.weibo.com/*"]
         }
     ],
     "content_scripts": [
         {
-          "js": ["content-script.js"],
-          "run_at": "document_idle",
-          "matches": [
-            "https://weibo.com/*",
-            "https://*.weibo.com/*"
-          ]
+            "js": ["content-script.js"],
+            "run_at": "document_idle",
+            "matches": ["https://weibo.com/*", "https://*.weibo.com/*"]
         }
     ]
 }

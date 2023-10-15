@@ -3,7 +3,6 @@ const Match_URL = ['weibo.com']
 const mainPage = './dist/main.html'
 const optionsPage = './dist/options.html'
 
-
 chrome.action.onClicked.addListener(async tab => {
     console.log(`chrome action onClicked`)
     if (!tab.url) return
@@ -19,11 +18,13 @@ chrome.action.onClicked.addListener(async tab => {
 })
 
 // hook by background service-worker
-chrome.scripting.registerContentScripts([{
-    id: "weibo-extend-inject",
-    matches: ["http://*/*", "https://*/*"],
-    js: ["inject-script.js"],
-    runAt: "document_start",
-    world: "MAIN",
-    allFrames: true
-}])
+chrome.scripting.registerContentScripts([
+    {
+        id: 'weibo-extend-inject',
+        matches: ['http://*/*', 'https://*/*'],
+        js: ['inject-script.js'],
+        runAt: 'document_start',
+        world: 'MAIN',
+        allFrames: true,
+    },
+])

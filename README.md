@@ -15,14 +15,13 @@
 
 ### Screenshots
 **查看点赞列表**
-  <br/><img src='./public/assets/images/SCR-20231016-baex.png' width="600px" /><br/>
+  <br/><img src='./docs/images/SCR-20231016-baex.png' width="600px" /><br/>
 
 
 **批量拉黑，批量解除拉黑**
-  <br/><img src='./public/assets/images/SCR-20231016-bbdq.png' width="600px" /><br/>
+  <br/><img src='./docs/images/SCR-20231016-bbdq.png' width="600px" /><br/>
 
 
 **拉黑/被拉黑后仍可查看主页**
-  <br/><img src='./public/assets/images/SCR-20231016-bbms.jpeg' width="600px" /><br/>
+  <br/><img src='./docs/images/SCR-20231016-bbms.jpeg' width="600px" /><br/>
 
-  

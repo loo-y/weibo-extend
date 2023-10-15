@@ -1,20 +1,26 @@
+'use client'
 import React from 'react'
 import _ from 'lodash'
 import { createRoot } from 'react-dom/client'
-import { createPortal } from 'react-dom'
+import { useAppSelector, useAppDispatch } from './hooks'
+import { getWeiboExtendState } from './slice'
+import { weiboExtendVirtualRootId } from '../utils/constants'
 import { UserType } from './interface'
-import { weiboExtendVirtualRootId } from './constants'
+import { Provider } from 'react-redux'
+import store from './store'
 
-interface IShowUserListRProps {
-    userList: UserType[]
-}
-export const ShowUserListR: React.FC<IShowUserListRProps> = ({ userList }) => {
-    if (_.isEmpty(userList)) return
+const UserLikeList: React.FC = () => {
+    const state = useAppSelector(getWeiboExtendState)
+    const { userList } = state || {}
+    console.log(`userList`, userList)
+
     const handleUserClick = (userInfo: UserType) => {
         const { uid, avatar, title } = userInfo || {}
         const url = /\d+/.test(uid) ? '//weibo.com/u/' + uid : '//weibo.com/' + uid
         window.open(url, '_blank')
     }
+
+    if (_.isEmpty(userList)) return null
 
     return (
         <div>
@@ -36,19 +42,20 @@ export const ShowUserListR: React.FC<IShowUserListRProps> = ({ userList }) => {
     )
 }
 
-export const XShowUserListR = ({ userList }: IShowUserListRProps) => {
-    if (!userList) {
-        return
-    }
+const App = () => {
+    return (
+        <Provider store={store}>
+            <UserLikeList />
+        </Provider>
+    )
+}
+
+export const renderVirtualPage = () => {
     const virtualRoot = document.getElementById(weiboExtendVirtualRootId) as HTMLElement
     const root = createRoot(virtualRoot)
     root.render(
         <div>
-            <ShowUserListR userList={userList} />
+            <App />
         </div>
     )
-
-    // createPortal(<ShowUserListR userList={userList} />, virtualRoot)
-
-    // return result;
 }

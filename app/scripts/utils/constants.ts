@@ -22,8 +22,10 @@ export const homePageTabList = [
 ]
 
 const baseClassName = `weibo-extend`
+export const weiboExtendVirtualRootId = `${baseClassName}-virtual-root`
 export const weiboExtendClassNames = {
     base: baseClassName,
+    root: `${baseClassName}-virtual-root`,
     blockLikeUsers: `${baseClassName}-block-like-users`,
     commentId: `${baseClassName}-commentid`,
 }

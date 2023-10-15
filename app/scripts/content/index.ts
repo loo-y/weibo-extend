@@ -4,9 +4,12 @@ import _ from 'lodash'
 // @ts-ignore
 import Cookies from 'js-cookie'
 import { fetchToBlockUser, fetchToGetLikeUsers } from '../utils/fetches'
-import { weiboExtendClassNames } from '../utils/constants'
+import { weiboExtendClassNames, weiboExtendVirtualRootId } from '../utils/constants'
 import { showUserList } from '../utils/doms'
 import { XShowUserListR } from '../utils/domsR'
+import { updateUserList } from '../reactVirtual/slice'
+import { renderVirtualPage } from '../reactVirtual/virtualPage'
+import store from '../reactVirtual/store'
 
 function injectCustomScript() {
     var scriptElement = document.createElement('script')
@@ -21,6 +24,14 @@ function injectCustomScript() {
     const firstScriptElement = scriptElementsInPage[0]
     // 插入新的 <script> 元素到第一个 <script> 元素之前
     // firstScriptElement?.parentNode?.insertBefore(scriptElement, firstScriptElement)
+}
+
+const injectVirtualRoot = () => {
+    var virtualRoot = document.createElement('div')
+    virtualRoot.className = weiboExtendClassNames.root
+    virtualRoot.id = weiboExtendVirtualRootId
+    document.body.appendChild(virtualRoot)
+    renderVirtualPage()
 }
 
 const contentRun = async () => {
@@ -49,7 +60,8 @@ const contentRun = async () => {
                     userList: likeUsers?.userList,
                 })
 
-                console.log(`showUserListR`, XShowUserListR({ userList: likeUsers?.userList || [] }))
+                store.dispatch(updateUserList({ userList: likeUsers?.userList || [] }))
+                // console.log(`showUserListR`, XShowUserListR({ userList: likeUsers?.userList || [] }))
             })
         }
     })
@@ -62,4 +74,4 @@ window.addEventListener('load', () => {
 })
 
 // 监听页面的加载完成事件, 注入自定义脚本到页面中
-// window.addEventListener('load', injectCustomScript)
+window.addEventListener('load', injectVirtualRoot)

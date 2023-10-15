@@ -24,11 +24,13 @@ const UserLikeList: React.FC = () => {
 
     return (
         <div>
-            {_.map(userList, userInfo => {
+            {_.map(userList, (userInfo, usr_index) => {
                 const { uid, avatar, title } = userInfo || {}
 
                 return (
                     <div
+                        className=" cursor-pointer"
+                        key={`userlist_${usr_index}`}
                         onClick={() => {
                             handleUserClick(userInfo)
                         }}
@@ -54,7 +56,7 @@ export const renderVirtualPage = () => {
     const virtualRoot = document.getElementById(weiboExtendVirtualRootId) as HTMLElement
     const root = createRoot(virtualRoot)
     root.render(
-        <div>
+        <div className="fixed left-0 top-0">
             <App />
         </div>
     )

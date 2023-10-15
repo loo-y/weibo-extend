@@ -26,6 +26,15 @@ function injectCustomScript() {
     // firstScriptElement?.parentNode?.insertBefore(scriptElement, firstScriptElement)
 }
 
+const injectVirtualStyle = () => {
+    // virtualPage.output.css
+    var linkStyleElment = document.createElement('link')
+    var extensionId = chrome.runtime.id
+    linkStyleElment.href = `chrome-extension://${extensionId}/virtualPage.output.css`
+    linkStyleElment.rel = `stylesheet`
+    document.body?.appendChild(linkStyleElment)
+}
+
 const injectVirtualRoot = () => {
     var virtualRoot = document.createElement('div')
     virtualRoot.className = weiboExtendClassNames.root
@@ -56,9 +65,9 @@ const contentRun = async () => {
             weiboExtendBlackBtn.click(async () => {
                 const likeUsers = await fetchToGetLikeUsers({ commentId: commentId })
                 console.log(`likeUsers`, likeUsers)
-                showUserList({
-                    userList: likeUsers?.userList,
-                })
+                // showUserList({
+                //     userList: likeUsers?.userList,
+                // })
 
                 store.dispatch(updateUserList({ userList: likeUsers?.userList || [] }))
                 // console.log(`showUserListR`, XShowUserListR({ userList: likeUsers?.userList || [] }))
@@ -74,4 +83,7 @@ window.addEventListener('load', () => {
 })
 
 // 监听页面的加载完成事件, 注入自定义脚本到页面中
-window.addEventListener('load', injectVirtualRoot)
+window.addEventListener('load', () => {
+    injectVirtualRoot()
+    injectVirtualStyle()
+})

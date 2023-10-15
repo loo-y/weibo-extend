@@ -44,6 +44,7 @@ package-lock.json
 /extension/dist/
 /extension/content-script.js
 /extension/inject-script.js
+/extension/*.output.css
 
 # zip file
 *.zip

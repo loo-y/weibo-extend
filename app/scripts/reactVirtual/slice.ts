@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, original, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState, AppThunk } from './store'
 import * as API from './API'
-import { fetchCount } from './API'
+import { fetchCount, fetchToBlockUser } from './API'
 import { WeiboExtendState } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
 import _ from 'lodash'
@@ -85,13 +85,48 @@ export const gethCount = createAsyncThunk(
     }
 )
 
+export const blockUser = createAsyncThunk(
+    'weiboExtendSlice/blockUser',
+    async (params: { uid: string } = { uid: '' }, { dispatch, getState }: any) => {
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        dispatch(
+            makeApiRequestInQueue({
+                apiRequest: fetchToBlockUser.bind(null, {
+                    uid: params.uid,
+                }),
+                asyncThunk: blockUser,
+            })
+        )
+    }
+)
+
+export const unblockUser = createAsyncThunk(
+    'weiboExtendSlice/unblockUser',
+    async (params: { uid: string } = { uid: '' }, { dispatch, getState }: any) => {
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        dispatch(
+            makeApiRequestInQueue({
+                apiRequest: fetchToBlockUser.bind(null, {
+                    uid: params.uid,
+                    unblock: true,
+                }),
+                asyncThunk: unblockUser,
+            })
+        )
+    }
+)
+
 export const weiboExtendSlice = createSlice({
     name: 'weiboExtendSlice',
     initialState,
     reducers: {
-        updateUserList: (state, action: PayloadAction<Partial<WeiboExtendState>>) => {
-            console.log(`action.payload?`, action.payload)
-            return { ...state, userList: action.payload?.userList }
+        updateBlackUserList: (state, action: PayloadAction<Partial<WeiboExtendState>>) => {
+            // 当列表更新时，清空原本调用的接口queue
+            apiRequestQueue.length = 0
+            return { ...state, blackUserList: action.payload?.blackUserList }
+        },
+        updateBlackLikeText: (state, action: PayloadAction<{ blackLikeText: string }>) => {
+            return { ...state, blackLikeText: action.payload?.blackLikeText }
         },
         setRequestInQueueFetching: (state, action: PayloadAction<boolean>) => {
             state.requestInQueueFetching = action.payload
@@ -99,19 +134,62 @@ export const weiboExtendSlice = createSlice({
         updateState: (state, action: PayloadAction<Partial<WeiboExtendState>>) => {
             return { ...state, ...action.payload }
         },
+        clearRequestQueue: state => {
+            apiRequestQueue.length = 0
+            return { ...state }
+        },
     },
     extraReducers: builder => {
-        builder.addCase(gethCount.fulfilled, (state, action) => {
-            if (action.payload as any) {
-                const { status, data } = (action.payload as any) || {}
-                state.count = (status && !_.isEmpty(data?.poems) && data.poems) || []
-            } else {
-                return { ...state }
-            }
-        })
+        builder
+            .addCase(gethCount.fulfilled, (state, action) => {
+                if (action.payload as any) {
+                    const { status, data } = (action.payload as any) || {}
+                    state.count = (status && !_.isEmpty(data?.count) && data.count) || []
+                } else {
+                    return { ...state }
+                }
+            })
+            .addCase(blockUser.fulfilled, (state, action) => {
+                if (action.payload as any) {
+                    const { status, data } = (action.payload as any) || {}
+                    if (status && data?.uid) {
+                        if (!_.isEmpty(state.blackUserList)) {
+                            _.map(state.blackUserList, user => {
+                                if (user.uid == data.uid) {
+                                    user.isBlocked = true
+                                }
+                                return {
+                                    ...user,
+                                }
+                            })
+                        }
+                    }
+                } else {
+                    return { ...state }
+                }
+            })
+            .addCase(unblockUser.fulfilled, (state, action) => {
+                if (action.payload as any) {
+                    const { status, data } = (action.payload as any) || {}
+                    if (status && data?.uid) {
+                        if (!_.isEmpty(state.blackUserList)) {
+                            _.map(state.blackUserList, user => {
+                                if (user.uid == data.uid) {
+                                    user.isBlocked = false
+                                }
+                                return {
+                                    ...user,
+                                }
+                            })
+                        }
+                    }
+                } else {
+                    return { ...state }
+                }
+            })
     },
 })
 
 // export actions
-export const { updateState, updateUserList } = weiboExtendSlice.actions
+export const { updateState, updateBlackUserList, updateBlackLikeText, clearRequestQueue } = weiboExtendSlice.actions
 export default weiboExtendSlice.reducer

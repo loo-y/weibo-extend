@@ -38,3 +38,11 @@ export const watchElement = ({
 //         console.log(`target node`, element)
 //     },
 // })
+
+export const sleep = (sec: number) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(true)
+        }, sec * 1000)
+    })
+}

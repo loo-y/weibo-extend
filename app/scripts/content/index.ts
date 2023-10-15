@@ -7,7 +7,7 @@ import { fetchToBlockUser, fetchToGetLikeUsers } from '../utils/fetches'
 import { weiboExtendClassNames, weiboExtendVirtualRootId } from '../utils/constants'
 import { showUserList } from '../utils/doms'
 import { XShowUserListR } from '../utils/domsR'
-import { updateUserList } from '../reactVirtual/slice'
+import { updateBlackUserList, updateBlackLikeText } from '../reactVirtual/slice'
 import { renderVirtualPage } from '../reactVirtual/virtualPage'
 import store from '../reactVirtual/store'
 
@@ -55,12 +55,15 @@ const contentRun = async () => {
         const item1In = item1.find(`.item1in`)
         const item1IconBox = item1In.find(`.opt.woo-box-flex`)
         if (item1IconBox.find(`.${WEC_blockLikeUsers}`).length < 1) {
-            const commentId = item1In.find(`.${weiboExtendClassNames.commentId}`)?.data('cid') || ''
+            const commentIdDom = item1In.find(`.${weiboExtendClassNames.commentId}`)
+            const commentText = commentIdDom?.parent()?.text() || ''
+            const commentId = commentIdDom?.data('cid') || ''
             const weiboExtendBlackBtn = $(`<div>`)
-                .text('拉黑点赞用户')
+                .text('点赞列表')
                 .addClass(
                     `${WEC_base} ${WEC_blockLikeUsers} wbpro-iconbed woo-box-flex woo-box-alignCenter woo-box-justifyCenter optHover`
                 )
+                .css('width', '80px')
                 .prependTo(item1IconBox)
             weiboExtendBlackBtn.click(async () => {
                 const likeUsers = await fetchToGetLikeUsers({ commentId: commentId })
@@ -68,8 +71,9 @@ const contentRun = async () => {
                 // showUserList({
                 //     userList: likeUsers?.userList,
                 // })
-
-                store.dispatch(updateUserList({ userList: likeUsers?.userList || [] }))
+                console.log(`commentText`, commentText)
+                store.dispatch(updateBlackUserList({ blackUserList: likeUsers?.userList || [] }))
+                store.dispatch(updateBlackLikeText({ blackLikeText: commentText }))
                 // console.log(`showUserListR`, XShowUserListR({ userList: likeUsers?.userList || [] }))
             })
         }

@@ -5,6 +5,29 @@ import { weiboExtendClassNames } from '../utils/constants'
 
 const responseReplaceList = [
     {
+        // 瀑布流 - 屏蔽广告
+        urlMatch: `unreadfriendstimeline`,
+        responseModify: (responseText: string) => {
+            let responseJson: Record<string, any> = {}
+            try {
+                responseJson = JSON.parse(responseText)
+                if (responseJson?.statuses?.length) {
+                    responseJson.statuses = _.filter(responseJson.statuses, dataItem => {
+                        const { promotion } = dataItem || {}
+                        if (promotion?.type == `ad`) {
+                            console.log(`ad==>`, dataItem)
+                            return false
+                        }
+                        return true
+                    })
+                }
+            } catch (e) {
+                console.log(`error`, e)
+            }
+            return JSON.stringify(responseJson)
+        },
+    },
+    {
         urlMatch: `buildComment`,
         responseModify: (responseText: string) => {
             let responseJson: Record<string, any> = {}

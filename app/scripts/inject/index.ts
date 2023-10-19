@@ -82,7 +82,8 @@ const injectFunction = () => {
         responseReplaceList,
     })
 
-    hookHistory(history)
+    // TODO stop hook histroy, a pic opened cannot be close.
+    // hookHistory(history)
 }
 
 injectFunction()

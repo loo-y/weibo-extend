@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice, original, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState, AppThunk } from './store'
 import * as API from './API'
-import { fetchCount, fetchToBlockUser } from './API'
+import { fetchCount, fetchToDestroyFollowers, fetchToBlockUser } from './API'
 import { WeiboExtendState } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
+import { isType } from '../utils/tools'
 import _ from 'lodash'
 
 // define a queue to store api request
@@ -13,6 +14,7 @@ export const getWeiboExtendState = (state: AppState): WeiboExtendState => state.
 
 const initialState: WeiboExtendState & Record<string, any> = {
     requestInQueueFetching: false,
+    followersRemoved: new Set(),
 }
 
 type RequestCombo = {
@@ -80,6 +82,22 @@ export const gethCount = createAsyncThunk(
                     count: params.count,
                 }),
                 asyncThunk: gethCount,
+            })
+        )
+    }
+)
+
+// fetchToRemoveFans
+export const destroyFollowers = createAsyncThunk(
+    'weiboExtendSlice/destroyFollowers',
+    async (params: { uid: string } = { uid: '' }, { dispatch, getState }: any) => {
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        dispatch(
+            makeApiRequestInQueue({
+                apiRequest: fetchToDestroyFollowers.bind(null, {
+                    uid: params.uid,
+                }),
+                asyncThunk: destroyFollowers,
             })
         )
     }
@@ -181,6 +199,20 @@ export const weiboExtendSlice = createSlice({
                                     ...user,
                                 }
                             })
+                        }
+                    }
+                } else {
+                    return { ...state }
+                }
+            })
+            .addCase(destroyFollowers.fulfilled, (state, action) => {
+                if (action.payload as any) {
+                    const { status, data } = (action.payload as any) || {}
+                    if (status && data?.uid) {
+                        if (!isType(state?.followersRemoved, Set)) {
+                            state.followersRemoved = new Set(data.uid)
+                        } else {
+                            state.followersRemoved.add(data.uid)
                         }
                     }
                 } else {

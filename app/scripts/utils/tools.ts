@@ -46,3 +46,11 @@ export const sleep = (sec: number) => {
         }, sec * 1000)
     })
 }
+
+export const isSet = (variable: any): variable is Set<any> => {
+    return variable instanceof Set
+}
+
+export const isType = <T>(value: unknown, targetType: new (...args: any[]) => T): value is T => {
+    return value instanceof targetType
+}

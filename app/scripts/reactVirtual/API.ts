@@ -56,11 +56,11 @@ const baseFetch = ({ url, body, method }: IBaseFetchProps) => {
     })
 }
 
-interface IFetchToBlockUserProps {
+interface IBlockUserProps {
     uid?: string
     unblock?: boolean
 }
-export const fetchToBlockUser = async (props?: IFetchToBlockUserProps) => {
+export const fetchToBlockUser = async (props?: IBlockUserProps) => {
     let data = null,
         status = false
     const { uid, unblock } = props || {}
@@ -78,7 +78,33 @@ export const fetchToBlockUser = async (props?: IFetchToBlockUserProps) => {
         data = { ...(data || {}), uid }
         status = true
     } catch (e) {
-        console.log(`fetchToBlockUser`)
+        console.log(`fetchToBlockUser`, e)
+    }
+
+    return { data, status }
+}
+
+interface IDestroyFollowersProps {
+    uid?: string
+}
+export const fetchToDestroyFollowers = async (props?: IDestroyFollowersProps) => {
+    let data = null,
+        status = false
+    const { uid } = props || {}
+
+    if (!uid) return { data, status }
+    try {
+        const response = await baseFetch({
+            url: `//weibo.com/ajax/profile/destroyFollowers`,
+            body: { uid },
+        })
+        data = await response.json()
+        // 防止过快导致接口请求被封
+        await sleep(0.3)
+        data = { ...(data || {}), uid }
+        status = true
+    } catch (e) {
+        console.log(`fetchToDestroyFollowers`, e)
     }
 
     return { data, status }

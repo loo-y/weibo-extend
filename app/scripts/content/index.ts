@@ -3,7 +3,7 @@ import $ from 'jquery'
 import _ from 'lodash'
 // @ts-ignore
 import Cookies from 'js-cookie'
-import { fetchToBlockUser, fetchToGetLikeUsers } from '../utils/fetches'
+import { fetchToGetLikeUsers } from '../utils/fetches'
 import { weiboExtendClassNames, weiboExtendVirtualRootId } from '../utils/constants'
 import { showUserList } from '../utils/doms'
 import { XShowUserListR } from '../utils/domsR'

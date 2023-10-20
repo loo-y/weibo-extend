@@ -22,26 +22,6 @@ const baseFetch = ({ url, body, method }: IBaseFetchProps) => {
     })
 }
 
-interface IFetchToBlockUserProps {
-    uid?: string
-}
-export const fetchToBlockUser = async (props?: IFetchToBlockUserProps) => {
-    const { uid } = props || {}
-    if (!uid) return
-    let result = {}
-    try {
-        const response = await baseFetch({
-            url: `//weibo.com/ajax/statuses/filterUser`,
-            body: { uid, status: 1, interact: 1, follow: 1 },
-        })
-        result = await response.json()
-    } catch (e) {
-        console.log(`fetchToBlockUser`)
-    }
-
-    return result
-}
-
 const fetchfetchToGetLikeUsersByPage = async ({
     commentId,
     pageId,

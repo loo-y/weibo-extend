@@ -109,3 +109,33 @@ export const fetchToDestroyFollowers = async (props?: IDestroyFollowersProps) =>
 
     return { data, status }
 }
+
+interface IGetFriendsProps {
+    uid: string
+    pageIndex?: number
+}
+// https://weibo.com/ajax/friendships/friends?uid=1733770862&relate=fans&count=20&page=3&type=fans&fansSortType=fansCount
+export const fetchToGetFriends = async (props: IGetFriendsProps) => {
+    let data = null,
+        status = false
+    const { uid, pageIndex = 1 } = props || {}
+
+    if (!uid) return { data, status }
+
+    try {
+        const response = await baseFetch({
+            url: `//weibo.com/ajax/friendships/friends?uid=${uid}relate=fans&count=20&page=${pageIndex}&type=fans&fansSortType=fansCount`,
+            body: { uid },
+            method: 'GET',
+        })
+        data = await response.json()
+        // 防止过快导致接口请求被封
+        await sleep(0.3)
+        data = { ...(data || {}), uid, hasMore: data?.next_page > 0 }
+        status = true
+    } catch (e) {
+        console.log(`fetchToDestroyFollowers`, e)
+    }
+
+    return { data, status }
+}

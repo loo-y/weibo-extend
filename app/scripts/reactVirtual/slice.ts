@@ -14,7 +14,7 @@ export const getWeiboExtendState = (state: AppState): WeiboExtendState => state.
 
 const initialState: WeiboExtendState & Record<string, any> = {
     requestInQueueFetching: false,
-    followersRemoved: new Set(),
+    // followersRemoved: initFollowersRemoved
 }
 
 type RequestCombo = {

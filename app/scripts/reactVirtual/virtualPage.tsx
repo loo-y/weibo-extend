@@ -6,10 +6,12 @@ import { weiboExtendVirtualRootId } from '../utils/constants'
 import { Provider } from 'react-redux'
 import store from './store'
 import LikeUserList from './modules/LikeUserList'
+import FloatingActionBall from './modules/FloatingActionBall'
 
 const App = () => {
     return (
         <Provider store={store}>
+            <FloatingActionBall />
             <LikeUserList />
         </Provider>
     )

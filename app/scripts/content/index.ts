@@ -10,6 +10,7 @@ import { XShowUserListR } from '../utils/domsR'
 import { updateBlackUserList, updateBlackLikeText } from '../reactVirtual/slice'
 import { renderVirtualPage } from '../reactVirtual/virtualPage'
 import store from '../reactVirtual/store'
+import { POST_MSG_TYPE } from '../utils/interface'
 
 function injectCustomScript() {
     var scriptElement = document.createElement('script')
@@ -44,6 +45,7 @@ const injectVirtualRoot = () => {
 }
 
 const contentRun = async () => {
+    console.log(`this is contentRun`)
     // console.log(`globalThis.xsrfToken`, globalThis.xsrfToken)
     const { base: WEC_base, blockLikeUsers: WEC_blockLikeUsers } = weiboExtendClassNames
     $(document).on('mouseover', '.wbpro-list', (event: $.Event) => {
@@ -90,4 +92,9 @@ window.addEventListener('load', () => {
 window.addEventListener('load', () => {
     injectVirtualRoot()
     injectVirtualStyle()
+})
+window.addEventListener('message', function (event) {
+    if (event.source === window && event.data.action === POST_MSG_TYPE.historyChagne) {
+        console.log(event.data.action, event.data.url, document.location.href)
+    }
 })

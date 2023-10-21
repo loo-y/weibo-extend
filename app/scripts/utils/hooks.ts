@@ -1,5 +1,5 @@
 import _ from 'lodash'
-
+import { POST_MSG_TYPE } from './interface'
 interface IHookXHRSendProps {
     responseReplaceList: { urlMatch: string; responseModify: (responseText: string) => string }[]
 }
@@ -67,7 +67,10 @@ export const hookHistory = (history: History) => {
             history.onpushstate({ state: state })
         }
 
-        console.log(`url--->`, url)
+        // post url change
+        const urlString: string = url as string
+        window.postMessage({ action: POST_MSG_TYPE.historyChagne, url: urlString }, '*')
+
         // TODO 某些情况下， url 是一个相对路径
         // @ts-ignore
         // url = url && url.search(/^http/) > -1 ? url : ''

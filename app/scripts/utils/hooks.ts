@@ -67,8 +67,10 @@ export const hookHistory = (history: History) => {
             history.onpushstate({ state: state })
         }
 
+        console.log(`url--->`, url)
+        // TODO 某些情况下， url 是一个相对路径
         // @ts-ignore
-        url = url && url.search(/^http/) > -1 ? url : ''
+        // url = url && url.search(/^http/) > -1 ? url : ''
 
         // 调用原生的 history.pushState 方法
         // @ts-ignore

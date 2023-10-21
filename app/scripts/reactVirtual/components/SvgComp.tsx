@@ -1,5 +1,5 @@
 interface ISvgCompProps {
-    svgString: string,
+    svgString: string
     asImg?: boolean
     className?: string
 }

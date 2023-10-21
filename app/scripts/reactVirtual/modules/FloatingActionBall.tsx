@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import _ from 'lodash'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { blockUser, unblockUser, getWeiboExtendState, clearRequestQueue } from '../slice'
-import SvgComp from "../components/SvgComp"
+import SvgComp from '../components/SvgComp'
 
 const FloatingActionBall: React.FC = () => {
     const state = useAppSelector(getWeiboExtendState)
@@ -22,16 +22,12 @@ const FloatingActionBall: React.FC = () => {
 
 export default FloatingActionBall
 
-
-
-
 interface IToolSettingSvgProps {
     asImg?: boolean
     className?: string
 }
 
 const ToolSettingSvg = ({ asImg, className }: IToolSettingSvgProps) => {
-
     return <SvgComp asImg={asImg} className={className} svgString={svgString} />
 }
 

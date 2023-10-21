@@ -5,48 +5,17 @@ import _ from 'lodash'
 import Cookies from 'js-cookie'
 import { fetchToGetLikeUsers } from '../utils/fetches'
 import { weiboExtendClassNames, weiboExtendVirtualRootId } from '../utils/constants'
-import { showUserList } from '../utils/doms'
-import { XShowUserListR } from '../utils/domsR'
 import { updateBlackUserList, updateBlackLikeText } from '../reactVirtual/slice'
-import { renderVirtualPage } from '../reactVirtual/virtualPage'
+import { injectVirtualRoot, injectVirtualStyle } from './injects'
 import store from '../reactVirtual/store'
 import { POST_MSG_TYPE } from '../utils/interface'
-
-function injectCustomScript() {
-    var scriptElement = document.createElement('script')
-    var extensionId = chrome.runtime.id
-    console.log(extensionId)
-    scriptElement.src = `chrome-extension://${extensionId}/inject-script.js`
-    // document.documentElement.appendChild(scriptElement)
-    document.head?.appendChild(scriptElement)
-
-    // 获取页面中所有的 <script> 元素
-    const scriptElementsInPage = document.getElementsByTagName('script')
-    const firstScriptElement = scriptElementsInPage[0]
-    // 插入新的 <script> 元素到第一个 <script> 元素之前
-    // firstScriptElement?.parentNode?.insertBefore(scriptElement, firstScriptElement)
-}
-
-const injectVirtualStyle = () => {
-    // virtualPage.output.css
-    var linkStyleElment = document.createElement('link')
-    var extensionId = chrome.runtime.id
-    linkStyleElment.href = `chrome-extension://${extensionId}/virtualPage.output.css`
-    linkStyleElment.rel = `stylesheet`
-    document.body?.appendChild(linkStyleElment)
-}
-
-const injectVirtualRoot = () => {
-    var virtualRoot = document.createElement('div')
-    virtualRoot.className = weiboExtendClassNames.root
-    virtualRoot.id = weiboExtendVirtualRootId
-    document.body.appendChild(virtualRoot)
-    renderVirtualPage()
-}
+import fansContent from './fansContent'
 
 const contentRun = async () => {
     console.log(`this is contentRun`)
-    // console.log(`globalThis.xsrfToken`, globalThis.xsrfToken)
+
+    fansContent()
+
     const { base: WEC_base, blockLikeUsers: WEC_blockLikeUsers } = weiboExtendClassNames
     $(document).on('mouseover', '.wbpro-list', (event: $.Event) => {
         const targetElement = event.currentTarget as HTMLElement
@@ -81,20 +50,21 @@ const contentRun = async () => {
         }
     })
 }
-window.addEventListener('load', () => {
-    const xsrfToken = Cookies.get(`XSRF-TOKEN`)
-    globalThis.xsrfToken = xsrfToken
-    contentRun()
-    console.log(`Cookies,`)
-})
 
 // 监听页面的加载完成事件, 注入自定义脚本到页面中
 window.addEventListener('load', () => {
+    const xsrfToken = Cookies.get(`XSRF-TOKEN`)
+    globalThis.xsrfToken = xsrfToken
+
     injectVirtualRoot()
     injectVirtualStyle()
+
+    contentRun()
 })
+
 window.addEventListener('message', function (event) {
     if (event.source === window && event.data.action === POST_MSG_TYPE.historyChagne) {
         console.log(event.data.action, event.data.url, document.location.href)
+        fansContent()
     }
 })

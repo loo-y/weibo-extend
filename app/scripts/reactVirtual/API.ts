@@ -114,7 +114,7 @@ interface IGetFriendsProps {
     uid: string
     pageIndex?: number
 }
-// https://weibo.com/ajax/friendships/friends?uid=1733770862&relate=fans&count=20&page=3&type=fans&fansSortType=fansCount
+// fansSortType: fansCount / followTime
 export const fetchToGetFriends = async (props: IGetFriendsProps) => {
     let data = null,
         status = false

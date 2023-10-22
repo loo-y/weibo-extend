@@ -24,7 +24,7 @@ const FansPage: React.FC = () => {
     return (
         <div className="fanspage absolute top-[4.75rem] left-1/2 -ml-[12rem] [@media(max-width:1161px)]:-ml-[76px] [@media(max-width:872px)]:left-[360px] [@media(max-width:872px)]:ml-0">
             <div className="flex flex-row text-xs h-7 items-center font-bold rounded-xl px-2 bg-stone-200">
-                <span>批量移除粉丝：</span>
+                <span>批量移除非互关粉丝：</span>
                 <input
                     type="number"
                     ref={removeFansCountRef}

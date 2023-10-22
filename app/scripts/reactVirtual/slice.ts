@@ -151,9 +151,12 @@ export const removeFans = createAsyncThunk(
         }
         let removeCount = 0
         _.each(friends, friend => {
-            dispatch(destroyFollowers({ uid: friend?.idstr }))
-            removeCount++
-            if (removeCount >= params.count) return false // break
+            // 仅移除非互相关注的粉丝
+            if (!friend?.following) {
+                dispatch(destroyFollowers({ uid: friend?.idstr }))
+                removeCount++
+                if (removeCount >= params.count) return false // break
+            }
         })
         console.log(`removeFans`, `OK`)
         if (params.count <= removeCount) {

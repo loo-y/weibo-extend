@@ -55,7 +55,7 @@ const contentRun = async () => {
 window.addEventListener('load', () => {
     const xsrfToken = Cookies.get(`XSRF-TOKEN`)
     globalThis.xsrfToken = xsrfToken
-
+    getMyUid()
     injectVirtualRoot()
     injectVirtualStyle()
 
@@ -65,6 +65,27 @@ window.addEventListener('load', () => {
 window.addEventListener('message', function (event) {
     if (event.source === window && event.data.action === POST_MSG_TYPE.historyChagne) {
         console.log(event.data.action, event.data.url, document.location.href)
+        console.log(`globalThis.myUid `, globalThis.myUid)
         fansContent()
     }
 })
+
+const getMyUid = () => {
+    let myUid = ''
+    $(document).ready(function () {
+        const navDiv = $('div.woo-tab-nav')
+        const myPageLink = navDiv?.find('a[href*="/u/"]')
+
+        if (myPageLink.length > 0) {
+            const myPageLinkValue = myPageLink.attr('href')
+            myUid = (myPageLinkValue && myPageLinkValue.match(/\/u\/([\w\W]+)/)?.[1]) || ``
+            globalThis.myUid = myUid
+            console.log(`globalThis.myUid`, myUid)
+        } else {
+            // 没有找到满足条件的链接
+            console.log('没有找到含有 "weibo" 字样的链接。')
+        }
+    })
+    console.log(`myUid`, myUid)
+    return myUid
+}

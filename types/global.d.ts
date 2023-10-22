@@ -19,3 +19,5 @@ declare const chrome: Chrome
 
 // weibo token
 declare var xsrfToken: string
+
+declare var myUid: string

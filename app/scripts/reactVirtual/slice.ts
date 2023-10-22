@@ -14,6 +14,7 @@ export const getWeiboExtendState = (state: AppState): WeiboExtendState => state.
 
 const initialState: WeiboExtendState & Record<string, any> = {
     requestInQueueFetching: false,
+    showFloatingPopup: false,
     // followersRemoved: initFollowersRemoved
 }
 
@@ -138,6 +139,11 @@ export const weiboExtendSlice = createSlice({
     name: 'weiboExtendSlice',
     initialState,
     reducers: {
+        updateShowFloatingPopup: (state, action: PayloadAction<boolean>) => {
+            // 当列表更新时，清空原本调用的接口queue
+            apiRequestQueue.length = 0
+            return { ...state, showFloatingPopup: action.payload }
+        },
         updateShowRemoveFansBlock: (state, action: PayloadAction<boolean>) => {
             // 当列表更新时，清空原本调用的接口queue
             apiRequestQueue.length = 0
@@ -228,6 +234,12 @@ export const weiboExtendSlice = createSlice({
 })
 
 // export actions
-export const { updateState, updateBlackUserList, updateShowRemoveFansBlock, updateBlackLikeText, clearRequestQueue } =
-    weiboExtendSlice.actions
+export const {
+    updateState,
+    updateShowFloatingPopup,
+    updateBlackUserList,
+    updateShowRemoveFansBlock,
+    updateBlackLikeText,
+    clearRequestQueue,
+} = weiboExtendSlice.actions
 export default weiboExtendSlice.reducer

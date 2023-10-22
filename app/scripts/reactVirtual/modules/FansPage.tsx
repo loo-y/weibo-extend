@@ -1,15 +1,23 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import _ from 'lodash'
 import { useAppSelector, useAppDispatch } from '../hooks'
-import { blockUser, unblockUser, getWeiboExtendState, clearRequestQueue } from '../slice'
+import { getWeiboExtendState, removeFans } from '../slice'
 
 const FansPage: React.FC = () => {
     const state = useAppSelector(getWeiboExtendState)
     const dispatch = useAppDispatch()
-
+    const removeFansCountRef = useRef(null)
     const { showRemoveFans } = state || {}
 
-    const handleStartBtn = () => {}
+    const handleStartBtn = () => {
+        const removeFansCount: number = Number((removeFansCountRef.current as unknown as HTMLInputElement)?.value) || 0
+        dispatch(
+            removeFans({
+                uid: globalThis.myUid,
+                count: removeFansCount,
+            })
+        )
+    }
 
     if (!showRemoveFans) return null
 
@@ -19,6 +27,7 @@ const FansPage: React.FC = () => {
                 <span>批量移除粉丝：</span>
                 <input
                     type="number"
+                    ref={removeFansCountRef}
                     className=" h-5 outline-none w-10 border-none bg-stone-100 rounded-md"
                     defaultValue={0}
                     step={1}

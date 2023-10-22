@@ -124,8 +124,7 @@ export const fetchToGetFriends = async (props: IGetFriendsProps) => {
 
     try {
         const response = await baseFetch({
-            url: `//weibo.com/ajax/friendships/friends?uid=${uid}relate=fans&count=20&page=${pageIndex}&type=fans&fansSortType=fansCount`,
-            body: { uid },
+            url: `//weibo.com/ajax/friendships/friends?uid=${uid}&relate=fans&count=20&page=${pageIndex}&type=fans&fansSortType=fansCount`,
             method: 'GET',
         })
         data = await response.json()
@@ -134,7 +133,7 @@ export const fetchToGetFriends = async (props: IGetFriendsProps) => {
         data = { ...(data || {}), uid, hasMore: data?.next_page > 0 }
         status = true
     } catch (e) {
-        console.log(`fetchToDestroyFollowers`, e)
+        console.log(`fetchToGetFriends`, e)
     }
 
     return { data, status }

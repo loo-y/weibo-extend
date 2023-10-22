@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, original, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState, AppThunk } from './store'
 import * as API from './API'
-import { fetchCount, fetchToDestroyFollowers, fetchToBlockUser } from './API'
+import { fetchCount, fetchToDestroyFollowers, fetchToBlockUser, fetchToGetFriends } from './API'
 import { WeiboExtendState } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
 import { isType } from '../utils/tools'
@@ -15,7 +15,7 @@ export const getWeiboExtendState = (state: AppState): WeiboExtendState => state.
 const initialState: WeiboExtendState & Record<string, any> = {
     requestInQueueFetching: false,
     showFloatingPopup: false,
-    // followersRemoved: initFollowersRemoved
+    followersRemoved: [],
 }
 
 type RequestCombo = {
@@ -93,6 +93,7 @@ export const destroyFollowers = createAsyncThunk(
     'weiboExtendSlice/destroyFollowers',
     async (params: { uid: string } = { uid: '' }, { dispatch, getState }: any) => {
         const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        if (!params?.uid) return
         dispatch(
             makeApiRequestInQueue({
                 apiRequest: fetchToDestroyFollowers.bind(null, {
@@ -135,6 +136,33 @@ export const unblockUser = createAsyncThunk(
     }
 )
 
+export const removeFans = createAsyncThunk(
+    'weiboExtendSlice/removeFans',
+    async (params: { uid: string; count: number } = { uid: '', count: 0 }, { dispatch, getState }: any) => {
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        if (!params?.count) return
+        // TODO 这里没有走 api 队列
+        const friendsResp = await fetchToGetFriends({ uid: params.uid })
+        const { next_page, users } = friendsResp?.data || {}
+        const friends = next_page > 0 && users?.length ? users : []
+        console.log(`friends`, friends)
+        if (_.isEmpty(friends)) {
+            return true
+        }
+        let removeCount = 0
+        _.each(friends, friend => {
+            dispatch(destroyFollowers({ uid: friend?.idstr }))
+            removeCount++
+            if (removeCount >= params.count) return false // break
+        })
+        console.log(`removeFans`, `OK`)
+        if (params.count <= removeCount) {
+            return friends
+        }
+        dispatch(removeFans({ uid: params.uid, count: params.count - friends.length }))
+        return null
+    }
+)
 export const weiboExtendSlice = createSlice({
     name: 'weiboExtendSlice',
     initialState,
@@ -219,16 +247,20 @@ export const weiboExtendSlice = createSlice({
             .addCase(destroyFollowers.fulfilled, (state, action) => {
                 if (action.payload as any) {
                     const { status, data } = (action.payload as any) || {}
+                    console.log(`destroyFollowers--->`, data.uid)
                     if (status && data?.uid) {
-                        if (!isType(state?.followersRemoved, Set)) {
-                            state.followersRemoved = new Set(data.uid)
-                        } else {
-                            state.followersRemoved.add(data.uid)
+                        if (_.isEmpty(state.followersRemoved)) {
+                            state.followersRemoved = [data.uid]
+                        } else if (!state.followersRemoved.includes(data.uid)) {
+                            state.followersRemoved.push(data.uid)
                         }
                     }
                 } else {
                     return { ...state }
                 }
+            })
+            .addCase(removeFans.fulfilled, (state, action) => {
+                return state
             })
     },
 })

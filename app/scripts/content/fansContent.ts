@@ -8,7 +8,9 @@ const fansContent = () => {
         return
     }
 
-    store.dispatch(updateShowRemoveFansBlock(true))
+    // TODO WIP 未完成，隐藏
+    store.dispatch(updateShowRemoveFansBlock(false))
+    // store.dispatch(updateShowRemoveFansBlock(true))
 }
 
 export default fansContent

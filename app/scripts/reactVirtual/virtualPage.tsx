@@ -7,10 +7,12 @@ import { Provider } from 'react-redux'
 import store from './store'
 import LikeUserList from './modules/LikeUserList'
 import FloatingActionBall from './modules/FloatingActionBall'
+import FansPage from './modules/FansPage'
 
 const App = () => {
     return (
         <Provider store={store}>
+            <FansPage />
             <FloatingActionBall />
             <LikeUserList />
         </Provider>

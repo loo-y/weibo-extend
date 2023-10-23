@@ -12,7 +12,7 @@ const FloatingPopup: React.FC = () => {
     const handleClick = (item: Record<string, any>) => {
         const { jumpUrl, beforeMatch } = item || {}
         const currentUrl = document.location.href
-        if (currentUrl.match(beforeMatch)) {
+        if (currentUrl.match(beforeMatch) || !currentUrl.includes(globalThis.myUid)) {
             const jumpPageUrl = jumpUrl.replace(`{{uid}}`, globalThis.myUid || '')
             location.href = jumpPageUrl
         }

@@ -79,7 +79,11 @@ const responseReplaceList = [
 
 const requestReplaceList = [
     {
-        urlMatch: `ajax/log/action`,
+        urlMatch: `act_code=7165`,
+        isBlock: true,
+    },
+    {
+        urlMatch: `act_code=4288`,
         isBlock: true,
     },
 ]

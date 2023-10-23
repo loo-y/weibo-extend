@@ -27,7 +27,9 @@ export const hookXHR = ({ responseReplaceList, requestReplaceList }: IHookXHRPro
         xhr.open = function (method, url, async) {
             let isBlock = false
             isBlock = _.some(requestReplaceList, requestReplaceItem => {
-                return requestReplaceItem?.isBlock == true && url?.includes(requestReplaceItem.urlMatch)
+                return (
+                    requestReplaceItem?.isBlock == true && url?.includes && url?.includes(requestReplaceItem.urlMatch)
+                )
             })
 
             if (isBlock) {

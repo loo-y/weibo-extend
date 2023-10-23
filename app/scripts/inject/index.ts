@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { hookXHRSend, hookHistory } from '../utils/hooks'
+import { hookXHR, hookHistory } from '../utils/hooks'
 import { homePageTabList } from '../utils/constants'
 import { weiboExtendClassNames } from '../utils/constants'
 
@@ -76,10 +76,17 @@ const responseReplaceList = [
         },
     },
 ]
+
+const requestReplaceList = [
+    {
+        urlMatch: `ajax/log/action`,
+        isBlock: true,
+    },
+]
 const injectFunction = () => {
-    // hookXHR()
-    hookXHRSend({
+    hookXHR({
         responseReplaceList,
+        requestReplaceList,
     })
 
     hookHistory(history)

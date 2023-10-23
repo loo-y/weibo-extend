@@ -1,10 +1,12 @@
 import _ from 'lodash'
 import { POST_MSG_TYPE } from './interface'
-interface IHookXHRSendProps {
+interface IHookXHRProps {
     responseReplaceList: { urlMatch: string; responseModify: (responseText: string) => string }[]
+
+    requestReplaceList?: { urlMatch: string; requestModify?: Record<string, any>; isBlock?: boolean }[]
 }
 // 劫持 XHR 调用 Send
-export const hookXHRSend = ({ responseReplaceList }: IHookXHRSendProps) => {
+export const hookXHR = ({ responseReplaceList, requestReplaceList }: IHookXHRProps) => {
     if (_.isEmpty(responseReplaceList)) return
     // 劫持 XHR 调用
     // 保存原始的 XMLHttpRequest 构造函数
@@ -16,13 +18,69 @@ export const hookXHRSend = ({ responseReplaceList }: IHookXHRSendProps) => {
         // @ts-ignore
         let xhr = new (Function.prototype.bind.apply(originalXHR, args))()
 
+        // ********** open 用于劫持 request **********
+
+        // 保存原始的 open 方法
+        var originalOpen = xhr.open
+        // 重写 open 方法
+        // @ts-ignore
+        xhr.open = function (method, url, async) {
+            let isBlock = false
+            isBlock = _.some(requestReplaceList, requestReplaceItem => {
+                return requestReplaceItem?.isBlock == true && url?.includes(requestReplaceItem.urlMatch)
+            })
+
+            if (isBlock) {
+                const virtualXhr = new XMLHttpRequest()
+                Object.defineProperty(virtualXhr, 'readyState', {
+                    writable: true,
+                })
+                Object.defineProperty(virtualXhr, 'status', {
+                    writable: true,
+                })
+                Object.defineProperty(virtualXhr, 'statusText', {
+                    writable: true,
+                })
+                Object.defineProperty(virtualXhr, 'responseText', {
+                    writable: true,
+                })
+
+                // 设置虚拟的响应结果
+                const responseText = `{"ok":1}`
+                const status = 200
+                const statusText = 'OK'
+
+                // 模拟 readyState 的变化
+                // @ts-ignore
+                virtualXhr.readyState = 4
+                // @ts-ignore
+                virtualXhr.status = status
+                // @ts-ignore
+                virtualXhr.statusText = statusText
+                // @ts-ignore
+                virtualXhr.responseText = responseText
+
+                // 调用原始的 onreadystatechange 事件处理程序，以触发原本的回调函数
+                // this.onreadystatechange && this.onreadystatechange();
+
+                originalOpen.call(xhr, 'GET', `//${location.host}/`, true)
+                // 返回虚拟的 XMLHttpRequest 对象
+                // return virtualXhr.open(method, '', async);
+            } else {
+                // 调用原始的 open 方法
+                originalOpen.call(xhr, method, url, async)
+            }
+        }
+
+        // ********** send 用于劫持 response **********
+
         // 保存原始的 send 方法
-        var originalSend = xhr.send
+        let originalSend = xhr.send
 
         // 重写 send 方法
         // @ts-ignore
         xhr.send = function (...sendArgs) {
-            var originalOnReadyStateChange = xhr.onreadystatechange
+            let originalOnReadyStateChange = xhr.onreadystatechange
             xhr.onreadystatechange = function () {
                 // 检查状态码是否为 4 (完成)
                 if (xhr.readyState === 4) {

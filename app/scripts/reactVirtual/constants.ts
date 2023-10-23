@@ -10,3 +10,5 @@ export const floatingPopupList = [
         beforeMatch: new RegExp('^(?!.*page/follow/\\d+$).*$'),
     },
 ]
+
+export const weiboMainHost = `weibo.com`

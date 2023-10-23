@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import _ from 'lodash'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { blockUser, unblockUser, getWeiboExtendState, clearRequestQueue, updateShowFloatingPopup } from '../slice'
-import { floatingPopupList } from '../constants'
+import { floatingPopupList, weiboMainHost } from '../constants'
 
 const FloatingPopup: React.FC = () => {
     const state = useAppSelector(getWeiboExtendState)
@@ -13,7 +13,9 @@ const FloatingPopup: React.FC = () => {
         const { jumpUrl, beforeMatch } = item || {}
         const currentUrl = document.location.href
         if (currentUrl.match(beforeMatch) || !currentUrl.includes(globalThis.myUid)) {
-            const jumpPageUrl = jumpUrl.replace(`{{uid}}`, globalThis.myUid || '')
+            const jumpPageUrl = globalThis.myUid
+                ? jumpUrl.replace(`{{uid}}`, globalThis.myUid || '')
+                : `//${weiboMainHost}/`
             location.href = jumpPageUrl
         }
         dispatch(updateShowFloatingPopup(false))

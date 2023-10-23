@@ -16,6 +16,29 @@ const FansPage: React.FC = () => {
 
 export default FansPage
 
+const BlockOthersFans = () => {
+    const state = useAppSelector(getWeiboExtendState)
+    const dispatch = useAppDispatch()
+    const { showBlockOtherFans } = state || {}
+    const blockFansCountRef = useRef(null)
+
+    const handleStartBtn = () => {}
+
+    if (!showBlockOtherFans) return null
+
+    return (
+        <div className="flex flex-row text-xs h-7 items-center font-bold rounded-xl px-2 bg-stone-200">
+            <span>拉黑TA的所有粉丝</span>
+            <button
+                className="h5 ml-2 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
+                onClick={handleStartBtn}
+            >
+                开始
+            </button>
+        </div>
+    )
+}
+
 const RemoveMyFans = () => {
     const state = useAppSelector(getWeiboExtendState)
     const dispatch = useAppDispatch()

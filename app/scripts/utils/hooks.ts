@@ -120,8 +120,7 @@ export const hookXHR = ({ responseReplaceList, requestReplaceList }: IHookXHRPro
 }
 
 export const hookHistory = (history: History) => {
-    var originalPushState = history.pushState
-
+    let originalPushState = history.pushState
     history.pushState = function (state, title, url) {
         if (typeof history.onpushstate == 'function') {
             history.onpushstate({ state: state })
@@ -140,6 +139,26 @@ export const hookHistory = (history: History) => {
         return originalPushState.apply(history, arguments)
     }
     console.log(history.pushState)
+
+    let originalBack = history.back
+    history.back = function () {
+        // post url change
+        setTimeout(() => {
+            window.postMessage({ action: POST_MSG_TYPE.historyChagne, url: document.location.href }, '*')
+        }, 500)
+        // @ts-ignore
+        return originalBack.apply(history, arguments)
+    }
+
+    let originalGo = history.go
+    history.go = function (number) {
+        // post url change
+        setTimeout(() => {
+            window.postMessage({ action: POST_MSG_TYPE.historyChagne, url: document.location.href }, '*')
+        }, 500)
+        // @ts-ignore
+        return originalGo.apply(history, arguments)
+    }
 }
 
 // 劫持 XHR 调用 Open

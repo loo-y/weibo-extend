@@ -115,7 +115,7 @@ interface IGetFriendsProps {
     pageIndex?: number
 }
 // fansSortType: fansCount / followTime
-export const fetchToGetFriends = async (props: IGetFriendsProps) => {
+export const fetchToGetMyFriends = async (props: IGetFriendsProps) => {
     let data = null,
         status = false
     const { uid, pageIndex = 1 } = props || {}
@@ -125,6 +125,30 @@ export const fetchToGetFriends = async (props: IGetFriendsProps) => {
     try {
         const response = await baseFetch({
             url: `//weibo.com/ajax/friendships/friends?uid=${uid}&relate=fans&count=20&page=${pageIndex}&type=fans&fansSortType=fansCount`,
+            method: 'GET',
+        })
+        data = await response.json()
+        // 防止过快导致接口请求被封
+        await sleep(0.3)
+        data = { ...(data || {}), uid, hasMore: data?.next_page > 0 }
+        status = true
+    } catch (e) {
+        console.log(`fetchToGetFriends`, e)
+    }
+
+    return { data, status }
+}
+
+export const fetchToGetOthersFriends = async (props: IGetFriendsProps) => {
+    let data = null,
+        status = false
+    const { uid, pageIndex = 1 } = props || {}
+
+    if (!uid) return { data, status }
+
+    try {
+        const response = await baseFetch({
+            url: `//weibo.com/ajax/friendships/friends?uid=${uid}&relate=fans&count=20&page=${pageIndex}&type=all&newFollowerCount=0`,
             method: 'GET',
         })
         data = await response.json()

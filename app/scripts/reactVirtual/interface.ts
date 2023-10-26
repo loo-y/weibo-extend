@@ -4,6 +4,7 @@ export interface WeiboExtendState extends Record<string, any> {
     blackLikeText?: string
     followersRemoved: Array<string>
     showRemoveFans?: boolean
+    showBlockOtherFans?: boolean
     showFloatingPopup?: boolean
 }
 

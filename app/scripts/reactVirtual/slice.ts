@@ -1,7 +1,13 @@
 import { createAsyncThunk, createSlice, original, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState, AppThunk } from './store'
 import * as API from './API'
-import { fetchCount, fetchToDestroyFollowers, fetchToBlockUser, fetchToGetFriends } from './API'
+import {
+    fetchCount,
+    fetchToDestroyFollowers,
+    fetchToBlockUser,
+    fetchToGetOthersFriends,
+    fetchToGetMyFriends,
+} from './API'
 import { WeiboExtendState } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
 import { isType } from '../utils/tools'
@@ -142,9 +148,9 @@ export const removeFans = createAsyncThunk(
         const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
         if (!params?.count) return
         // TODO 这里没有走 api 队列
-        const friendsResp = await fetchToGetFriends({ uid: params.uid })
+        const friendsResp = await fetchToGetMyFriends({ uid: params.uid })
         const { next_page, users } = friendsResp?.data || {}
-        const friends = next_page > 0 && users?.length ? users : []
+        const friends = users?.length ? users : []
         console.log(`friends`, friends)
         if (_.isEmpty(friends)) {
             return true
@@ -162,16 +168,87 @@ export const removeFans = createAsyncThunk(
         if (params.count <= removeCount) {
             return friends
         }
+
+        if (!(next_page > 0)) return friends
         dispatch(removeFans({ uid: params.uid, count: params.count - friends.length }))
         return null
     }
 )
+
+export const blockOthersFans = createAsyncThunk(
+    'weiboExtendSlice/blockOthersFans',
+    async (
+        params: { otherUid: string; pageIndex?: number } = { otherUid: '', pageIndex: 1 },
+        { dispatch, getState }: any
+    ) => {
+        dispatch(updateStopBlockOthers(false))
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        const otherUid = params?.otherUid || ''
+        const pageIndex = params?.pageIndex || 1
+        if (!params?.otherUid) return
+
+        const friendsResp = await fetchToGetOthersFriends({ uid: params.otherUid, pageIndex })
+        const { next_page, users } = friendsResp?.data || {}
+        const friends = users?.length ? users : []
+        if (_.isEmpty(friends)) {
+            return true
+        }
+        for (let friend of friends) {
+            const stopBlockOthers = getWeiboExtendState(getState()).stopBlockOthers
+            if (stopBlockOthers) {
+                return true
+            }
+            await fetchToBlockUser({ uid: friend.idstr })
+            dispatch(updateState({ fansPageBlockingUser: friend?.screen_name || friend?.name || '' }))
+        }
+        if (!(next_page > 0)) return true
+        dispatch(blockOthersFans({ otherUid, pageIndex: pageIndex + 1 }))
+        return null
+    }
+)
+
+export const unBlockOthersFans = createAsyncThunk(
+    'weiboExtendSlice/unBlockOthersFans',
+    async (
+        params: { otherUid: string; pageIndex?: number } = { otherUid: '', pageIndex: 1 },
+        { dispatch, getState }: any
+    ) => {
+        dispatch(updateStopBlockOthers(false))
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        const otherUid = params?.otherUid || ''
+        const pageIndex = params?.pageIndex || 1
+        if (!params?.otherUid) return
+
+        const friendsResp = await fetchToGetOthersFriends({ uid: params.otherUid, pageIndex })
+        const { next_page, users } = friendsResp?.data || {}
+        const friends = users?.length ? users : []
+        if (_.isEmpty(friends)) {
+            return true
+        }
+        for (let friend of friends) {
+            const stopBlockOthers = getWeiboExtendState(getState()).stopBlockOthers
+            if (stopBlockOthers) {
+                return true
+            }
+            await fetchToBlockUser({ uid: friend.idstr, unblock: true })
+            dispatch(updateState({ fansPageUnBlockingUser: friend?.screen_name || friend?.name || '' }))
+        }
+
+        if (!(next_page > 0)) return true
+        dispatch(unBlockOthersFans({ otherUid, pageIndex: pageIndex + 1 }))
+        return null
+    }
+)
+
 export const weiboExtendSlice = createSlice({
     name: 'weiboExtendSlice',
     initialState,
     reducers: {
+        updateStopBlockOthers: (state, action: PayloadAction<boolean>) => {
+            apiRequestQueue.length = 0
+            return { ...state, stopBlockOthers: action.payload, fansPageBlockingUser: '', fansPageUnBlockingUser: '' }
+        },
         updateShowFloatingPopup: (state, action: PayloadAction<boolean>) => {
-            // 当列表更新时，清空原本调用的接口queue
             apiRequestQueue.length = 0
             return { ...state, showFloatingPopup: action.payload }
         },
@@ -179,6 +256,11 @@ export const weiboExtendSlice = createSlice({
             // 当列表更新时，清空原本调用的接口queue
             apiRequestQueue.length = 0
             return { ...state, blackUserList: [], showRemoveFans: action.payload }
+        },
+        updateshowBlockOtherFansBlock: (state, action: PayloadAction<boolean>) => {
+            // 当列表更新时，清空原本调用的接口queue
+            apiRequestQueue.length = 0
+            return { ...state, blackUserList: [], showBlockOtherFans: action.payload }
         },
         updateBlackUserList: (state, action: PayloadAction<Partial<WeiboExtendState>>) => {
             // 当列表更新时，清空原本调用的接口queue
@@ -272,8 +354,10 @@ export const weiboExtendSlice = createSlice({
 export const {
     updateState,
     updateShowFloatingPopup,
+    updateStopBlockOthers,
     updateBlackUserList,
     updateShowRemoveFansBlock,
+    updateshowBlockOtherFansBlock,
     updateBlackLikeText,
     clearRequestQueue,
 } = weiboExtendSlice.actions

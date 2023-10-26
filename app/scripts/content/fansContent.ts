@@ -1,16 +1,16 @@
 import store from '../reactVirtual/store'
-import { updateShowRemoveFansBlock } from '../reactVirtual/slice'
+import { updateShowRemoveFansBlock, updateshowBlockOtherFansBlock } from '../reactVirtual/slice'
 
 const fansContent = () => {
+    store.dispatch(updateShowRemoveFansBlock(false))
+    store.dispatch(updateshowBlockOtherFansBlock(false))
     const currentUrl = document.location.href
-    if (!currentUrl.includes(`relate=fans`)) {
-        store.dispatch(updateShowRemoveFansBlock(false))
+    console.log(`run fans`, currentUrl)
+    if (currentUrl.includes(`relate=fans`)) {
+        store.dispatch(updateShowRemoveFansBlock(true))
+        store.dispatch(updateshowBlockOtherFansBlock(true))
         return
     }
-
-    // TODO WIP 未完成，隐藏
-    store.dispatch(updateShowRemoveFansBlock(false))
-    // store.dispatch(updateShowRemoveFansBlock(true))
 }
 
 export default fansContent

@@ -1,6 +1,10 @@
 ## Weibo Extend
 微博扩展插件
 
+Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/npegohlaijfkhcjahlgddhanhimeoibn)
+
+Edge Addon👉 [微博扩展](https://microsoftedge.microsoft.com/addons/detail/kgadefmghkgpaapildhabgaindebmfdm)
+
 ********** 该插件仅用于学习和交流 **********
 
 ### 实现功能

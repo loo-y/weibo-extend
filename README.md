@@ -18,6 +18,8 @@ Edge Addon👉 [微博扩展](https://microsoftedge.microsoft.com/addons/detail/
 
 5. 移除时间流中类型为广告的微博 (✔️)
 
+6. 批量拉黑某人的所有粉丝 (✔️)
+
 ### Screenshots
 **查看点赞列表**
   <br/><img src='./docs/images/SCR-20231016-baex.png' width="600px" /><br/>
@@ -30,3 +32,6 @@ Edge Addon👉 [微博扩展](https://microsoftedge.microsoft.com/addons/detail/
 **拉黑/被拉黑后仍可查看主页**
   <br/><img src='./docs/images/SCR-20231016-bbms.jpeg' width="600px" /><br/>
 
+
+**批量拉黑某人的所有粉丝**
+  <br/><img src='./docs/images/SCR-20231027-cdvk.png' width="600px" /><br/>

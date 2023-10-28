@@ -45,6 +45,7 @@ package-lock.json
 /extension/content-script.js
 /extension/inject-script.js
 /extension/*.output.css
+/extension/weiboSave/
 
 # zip file
 *.zip

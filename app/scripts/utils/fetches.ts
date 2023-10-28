@@ -109,3 +109,14 @@ export const fetchToGetLikeUsers = async ({ commentId }: { commentId: string | n
         userList,
     }
 }
+
+export const fetchToGetImageBlob = async ({ imageUrl }: { imageUrl: string }): Promise<null | Blob> => {
+    if (!imageUrl) return null
+    const response = await baseFetch({
+        url: imageUrl,
+        method: 'GET',
+    })
+
+    const respBlob = await response.blob()
+    return respBlob
+}

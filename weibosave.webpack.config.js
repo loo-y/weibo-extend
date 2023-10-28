@@ -32,7 +32,8 @@ module.exports = {
             minify: {
               collapseWhitespace: true,  // 压缩 HTML 文件中的空白字符
               removeComments: true,  // 删除 HTML 文件中的注释
-            }
+            },
+            inject: false, // 禁止自动插入，这样会执行两遍js
         })
     ],
     module: {

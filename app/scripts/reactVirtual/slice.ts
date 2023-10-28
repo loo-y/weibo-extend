@@ -7,10 +7,11 @@ import {
     fetchToBlockUser,
     fetchToGetOthersFriends,
     fetchToGetMyFriends,
+    fetchToGetBlog,
 } from './API'
 import { WeiboExtendState } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
-import { isType } from '../utils/tools'
+import { saveBlogToZip } from '../utils/tools'
 import _ from 'lodash'
 
 // define a queue to store api request
@@ -245,6 +246,34 @@ export const unBlockOthersFans = createAsyncThunk(
         if (!(next_page > 0)) return true
         dispatch(unBlockOthersFans({ otherUid, pageIndex: pageIndex + 1 }))
         return null
+    }
+)
+
+export const saveWeiboQueue = createAsyncThunk(
+    'weiboExtendSlice/saveWeiboQueue',
+    async (params: { uid: string; pageIndex?: number } = { uid: '', pageIndex: 1 }, { dispatch, getState }: any) => {
+        dispatch(updateStopBlockOthers(false))
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        const otherUid = params?.uid || ''
+        let pageIndex = params?.pageIndex || 1
+        if (!otherUid) return
+
+        // 获取单次保存的列表
+        const onePageCount = 30
+        let onePageList: Record<string, any>[] = []
+        for (let count = 0; count < onePageCount; ) {
+            const blogsResp = await fetchToGetBlog({ uid: otherUid, pageIndex })
+            pageIndex++
+            const { list, hasMore } = blogsResp?.data || {}
+            count += list?.length || 0
+            onePageList = onePageList.concat(list)
+            if (!hasMore) break
+        }
+
+        console.log(`onePageList`, onePageList)
+        saveBlogToZip({
+            myBlog: onePageList,
+        })
     }
 )
 

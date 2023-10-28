@@ -162,3 +162,30 @@ export const fetchToGetOthersFriends = async (props: IGetFriendsProps) => {
 
     return { data, status }
 }
+
+export const fetchToGetBlog = async (props: { uid: string; since_id?: string; pageIndex?: number }) => {
+    let data = null,
+        status = false
+    const { uid, pageIndex = 1, since_id } = props || {}
+
+    if (!uid) return { data, status }
+
+    try {
+        const response = await baseFetch({
+            url: `//weibo.com/ajax/statuses/mymblog?uid=${uid}&page=${pageIndex}&feature=0${
+                since_id ? '&since_id=' + since_id : ''
+            }`,
+            method: 'GET',
+        })
+        const respJson = await response.json()
+        const realData = respJson?.data || {}
+        // 防止过快导致接口请求被封
+        await sleep(0.3)
+        data = { ...(realData || {}), uid, hasMore: !!realData?.since_id }
+        status = true
+    } catch (e) {
+        console.log(`fetchToGetFriends`, e)
+    }
+
+    return { data, status }
+}

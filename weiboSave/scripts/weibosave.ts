@@ -11,15 +11,24 @@ const start=async ()=>{
     const list = myblog.list
 
     const postClass = `weibopost flex flex-col`
+    let isLoaded = false;
     $(document).ready(function(){
+        if(isLoaded) return;
+        isLoaded = true;
         const $body = $(document.body);
         const $postsContainer = $body.find("#weibo-extend-posts")
         _.each(list, item=>{
+            const { text, text_raw, picShows} = item || {}
             let $post = $('<div>').addClass(postClass);
-            var $text = $('<p>').text(item.text);
+            let $text = $('<p>').text(text_raw || text);
             $post.append($text);
-            var $image = $('<img>').attr('src', item.image);
-            $post.append($image);
+            if(!_.isEmpty(picShows)){
+                _.map(picShows, picItem=>{
+                    let $image = $('<img>').attr('src', `./image/${picItem.picName}`);
+                    $post.append($image);
+                })
+            }
+
             $postsContainer.append($post);
         })
     })

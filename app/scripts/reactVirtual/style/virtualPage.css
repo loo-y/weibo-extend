@@ -1,2 +1,4 @@
 @config "../../../../virtualpage.tailwind.config.ts";
-@tailwind utilities
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

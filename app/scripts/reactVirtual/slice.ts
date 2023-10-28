@@ -256,6 +256,12 @@ export const saveWeiboQueue = createAsyncThunk(
         { dispatch, getState }: any
     ) => {
         dispatch(updateStopBlockOthers(false))
+        dispatch(
+            updateState({
+                stopSaving: false,
+                showWeiboPop: true,
+            })
+        )
         const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
         const otherUid = params?.uid || ''
         let pageIndex = params?.pageIndex || 1
@@ -266,22 +272,49 @@ export const saveWeiboQueue = createAsyncThunk(
         // 获取单次保存的列表
         const onePageCount = 100
         let onePageList: Record<string, any>[] = []
+        let totalCountSaveingWeibo = 0
         for (let count = 0; count < onePageCount; ) {
             const blogsResp = await fetchToGetBlog({ uid: otherUid, pageIndex })
             pageIndex++
-            const { list, hasMore } = blogsResp?.data || {}
+            const { list, hasMore, total } = blogsResp?.data || {}
+            totalCountSaveingWeibo = total || totalCountSaveingWeibo
             count += list?.length || 0
             onePageList = onePageList.concat(list)
             isEnd = !hasMore
             if (!hasMore) break
         }
 
+        dispatch(updateState({ totalCountSaveingWeibo }))
+
         console.log(`onePageList`, onePageList)
         await saveBlogToZip({
             myBlog: onePageList,
             start,
+            eachCallback: ({ weiboCount, weiboPicCount }) => {
+                const { stopSaving } = getWeiboExtendState(getState())
+                if (stopSaving) {
+                    location.reload()
+                }
+
+                dispatch(
+                    updateState({
+                        currentSavingWeiboCount: start + weiboCount,
+                        currentSavingWeiboPicCount: weiboPicCount,
+                    })
+                )
+            },
         })
-        if (isEnd) return null
+        const { stopSaving } = getWeiboExtendState(getState())
+        if (isEnd || stopSaving) {
+            dispatch(
+                updateState({
+                    showWeiboPop: false,
+                    currentSavingWeiboCount: 0,
+                    currentSavingWeiboPicCount: 0,
+                })
+            )
+            return null
+        }
         dispatch(saveWeiboQueue({ uid: otherUid, pageIndex, start: start + (onePageList?.length || 0) }))
     }
 )

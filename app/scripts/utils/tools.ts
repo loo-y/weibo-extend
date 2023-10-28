@@ -63,10 +63,13 @@ export const isType = <T>(value: unknown, targetType: new (...args: any[]) => T)
 interface ISaveBlogToZipProps {
     myBlog: Record<string, any>[]
     start?: number
+    eachCallback?: (info: any) => void
 }
-export const saveBlogToZip = async ({ myBlog, start }: ISaveBlogToZipProps) => {
+export const saveBlogToZip = async ({ myBlog, start, eachCallback }: ISaveBlogToZipProps) => {
     const zip = new JSZip()
-    const range = `${(start || 0) + 1}_${myBlog?.length || 0}`
+    start = start || 1
+    let end = start + (myBlog?.length || 0)
+    const range = `${start}_${end}`
     const userInfo = myBlog?.[0]?.user || {}
     const { screen_name, idstr } = userInfo || {}
     const zipFileName = `${idstr}_${screen_name}_${range}`
@@ -91,7 +94,7 @@ export const saveBlogToZip = async ({ myBlog, start }: ISaveBlogToZipProps) => {
     scriptsFolder?.file(weibosaveJsName, weibosaveJsText)
     const styleFolder = container.folder('style')
     styleFolder?.file(weibosaveCssName, weibosaveCssText)
-    await convertBlogList({ myBlog: myBlog, zipContainer: container })
+    await convertBlogList({ myBlog: myBlog, zipContainer: container, eachCallback })
 
     zip.generateAsync({ type: 'blob' }).then(function (content) {
         // see FileSaver.js
@@ -108,9 +111,15 @@ const fetchFileStringFromExtension = async (fileUrl: string): Promise<any> => {
 const convertBlogList = async ({
     myBlog,
     zipContainer,
-}: ISaveBlogToZipProps & { zipContainer: JSZip }): Promise<void> => {
+    eachCallback,
+}: ISaveBlogToZipProps & { zipContainer: JSZip; eachCallback?: (info: any) => void }): Promise<void> => {
+    const imageFolder = zipContainer.folder('image')
     let totalPicShowList: { picName: string; url: string }[] = []
-    const finalList = _.map(myBlog, blogItem => {
+    let finalList: typeof myBlog = []
+    let _count = 0
+    for (let blogItem of myBlog) {
+        _count++
+
         const {
             created_at,
             attitudes_count,
@@ -139,9 +148,28 @@ const convertBlogList = async ({
                           }
                       })
                   )
-        totalPicShowList = totalPicShowList.concat(picShows)
+        // totalPicShowList = totalPicShowList.concat(picShows)
+        eachCallback &&
+            eachCallback({
+                weiboCount: _count,
+                weiboPicCount: 0,
+            })
+        let _count_pic_count = 0
+        // 不能使用Promise.all 会被封调用
+        for (let picShow of picShows) {
+            _count_pic_count++
+            eachCallback &&
+                eachCallback({
+                    weiboCount: _count,
+                    weiboPicCount: _count_pic_count,
+                })
+            const picBlob = await fetchToGetImageBlob({ imageUrl: picShow?.url })
+            if (picBlob) {
+                imageFolder?.file(picShow.picName, picBlob)
+            }
+        }
 
-        return {
+        finalList.push({
             created_at, // 创建时间
             attitudes_count, // 点赞数
             attitudes_status,
@@ -156,21 +184,21 @@ const convertBlogList = async ({
             source, // 客户端
             text,
             text_raw,
-        }
-    })
+        })
+    }
 
     zipContainer.file('myblog.js', `window.myblog={"list": ${JSON.stringify(finalList)}}`)
 
-    if (!_.isEmpty(totalPicShowList)) {
-        const imageFolder = zipContainer.folder('image')
-        // 不能使用Promise.all 会被封调用
-        for (let picShow of totalPicShowList) {
-            const picBlob = await fetchToGetImageBlob({ imageUrl: picShow?.url })
-            if (picBlob) {
-                imageFolder?.file(picShow.picName, picBlob)
-            }
-        }
-    }
+    // if (!_.isEmpty(totalPicShowList)) {
+    //     const imageFolder = zipContainer.folder('image')
+    //     // 不能使用Promise.all 会被封调用
+    //     for (let picShow of totalPicShowList) {
+    //         const picBlob = await fetchToGetImageBlob({ imageUrl: picShow?.url })
+    //         if (picBlob) {
+    //             imageFolder?.file(picShow.picName, picBlob)
+    //         }
+    //     }
+    // }
 }
 
 // getPackageDirectoryEntry is Foreground only, like in popup.html

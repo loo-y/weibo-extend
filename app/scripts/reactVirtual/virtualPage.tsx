@@ -8,6 +8,7 @@ import store from './store'
 import LikeUserList from './modules/LikeUserList'
 import FloatingActionBall from './modules/FloatingActionBall'
 import FansPage from './modules/FansPage'
+import SavingWeiboPopup from './modules/SavingWeiboPopup'
 
 const App = () => {
     return (
@@ -15,6 +16,7 @@ const App = () => {
             <FansPage />
             <FloatingActionBall />
             <LikeUserList />
+            <SavingWeiboPopup />
         </Provider>
     )
 }

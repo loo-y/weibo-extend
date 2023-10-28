@@ -45,6 +45,7 @@
     },
     "dependencies": {
         "@reduxjs/toolkit": "^1.9.7",
+        "dayjs": "^1.11.10",
         "file-saver": "^2.0.5",
         "immer": "^10.0.3",
         "jquery": "^3.7.1",

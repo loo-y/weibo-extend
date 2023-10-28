@@ -27,7 +27,7 @@ const BlockOthersFans = () => {
 
     useEffect(() => {
         const currentHref = document?.location?.href || ``
-        if (!currentHref.includes(globalThis.myUid)) {
+        if (!currentHref.includes(globalThis.myUid) && currentHref.includes(`relate=fans`)) {
             setShowBlock(true)
             const _uid = currentHref.match(/follow\/(\d+)/)?.[1] || ``
             setOtherUid(_uid)

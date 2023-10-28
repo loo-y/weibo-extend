@@ -144,11 +144,16 @@ export const unblockUser = createAsyncThunk(
 
 export const removeFans = createAsyncThunk(
     'weiboExtendSlice/removeFans',
-    async (params: { uid: string; count: number } = { uid: '', count: 0 }, { dispatch, getState }: any) => {
+    async (
+        params: { uid: string; count: number; pageIndex?: number } = { uid: '', count: 0 },
+        { dispatch, getState }: any
+    ) => {
+        dispatch(updateState({ fansPageremovingFans: '' }))
         const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
         if (!params?.count) return
-        // TODO 这里没有走 api 队列
-        const friendsResp = await fetchToGetMyFriends({ uid: params.uid })
+        const pageIndex = params?.pageIndex || 1
+        console.log(`pageIndex`, pageIndex)
+        const friendsResp = await fetchToGetMyFriends({ uid: params.uid, pageIndex })
         const { next_page, users } = friendsResp?.data || {}
         const friends = users?.length ? users : []
         console.log(`friends`, friends)
@@ -156,21 +161,24 @@ export const removeFans = createAsyncThunk(
             return true
         }
         let removeCount = 0
-        _.each(friends, friend => {
+        for (let friend of friends) {
             // 仅移除非互相关注的粉丝
             if (!friend?.following) {
-                dispatch(destroyFollowers({ uid: friend?.idstr }))
+                await fetchToDestroyFollowers({ uid: friend?.idstr })
+                dispatch(updateState({ fansPageremovingFans: friend?.screen_name || friend?.name || '' }))
                 removeCount++
-                if (removeCount >= params.count) return false // break
+                if (removeCount >= params.count) {
+                    dispatch(updateState({ fansPageremovingFans: '__completed__' }))
+                    return friends
+                }
             }
-        })
-        console.log(`removeFans`, `OK`)
-        if (params.count <= removeCount) {
-            return friends
         }
 
-        if (!(next_page > 0)) return friends
-        dispatch(removeFans({ uid: params.uid, count: params.count - friends.length }))
+        if (!(next_page > 0)) {
+            dispatch(updateState({ fansPageremovingFans: '__completed__' }))
+            return friends
+        }
+        dispatch(removeFans({ uid: params.uid, count: params.count - friends.length, pageIndex: pageIndex + 1 }))
         return null
     }
 )

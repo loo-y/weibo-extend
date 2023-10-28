@@ -31,6 +31,9 @@ const BlockOthersFans = () => {
             setShowBlock(true)
             const _uid = currentHref.match(/follow\/(\d+)/)?.[1] || ``
             setOtherUid(_uid)
+        } else {
+            setShowBlock(false)
+            setOtherUid('')
         }
     }, [document?.location?.href])
 
@@ -106,14 +109,16 @@ const RemoveMyFans = () => {
     const state = useAppSelector(getWeiboExtendState)
     const dispatch = useAppDispatch()
     const removeFansCountRef = useRef(null)
-    const { showRemoveFans } = state || {}
+    const { showRemoveFans, fansPageremovingFans } = state || {}
     const [showBlock, setShowBlock] = useState(false)
 
     useEffect(() => {
         if (document.location.href.includes(globalThis.myUid)) {
             setShowBlock(true)
+        } else {
+            setShowBlock(false)
         }
-    }, [])
+    }, [document?.location?.href])
 
     const handleStartBtn = () => {
         const removeFansCount: number = Number((removeFansCountRef.current as unknown as HTMLInputElement)?.value) || 0
@@ -129,23 +134,37 @@ const RemoveMyFans = () => {
     if (!showRemoveFans) return null
 
     return (
-        <div className="flex flex-row text-xs h-7 items-center font-bold rounded-xl px-2 bg-stone-200">
-            <span>批量移除非互关粉丝：</span>
-            <input
-                type="number"
-                ref={removeFansCountRef}
-                className=" h-5 outline-none w-10 border-none bg-stone-100 rounded-md"
-                defaultValue={0}
-                step={1}
-                max={30000}
-                min={0}
-            />
-            <button
-                className="h5 ml-2 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
-                onClick={handleStartBtn}
-            >
-                开始
-            </button>
+        <div className="flex flex-row gap-2 text-xs h-7 font-bold bg-transparent w-[38rem]">
+            <div className="flex flex-row rounded-xl bg-stone-200 px-2 items-center w-[13rem]">
+                <span>批量移除非互关粉丝：</span>
+                <input
+                    type="number"
+                    ref={removeFansCountRef}
+                    className=" h-5 outline-none w-10 border-none bg-stone-100 rounded-md"
+                    defaultValue={0}
+                    step={1}
+                    max={30000}
+                    min={0}
+                />
+                <button
+                    className="h5 ml-2 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
+                    onClick={handleStartBtn}
+                >
+                    开始
+                </button>
+            </div>
+            <div className="flex flex-row items-center gap-1">
+                {fansPageremovingFans ? (
+                    fansPageremovingFans == `__completed__` ? (
+                        <span>{`已移除完毕`}</span>
+                    ) : (
+                        <>
+                            <span>{fansPageremovingFans}</span>
+                            <span>已移除</span>
+                        </>
+                    )
+                ) : null}
+            </div>
         </div>
     )
 }

@@ -1,8 +1,9 @@
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const outDir = path.resolve(__dirname, './extension/weibSave')
-const scriptPath = path.resolve(__dirname, './weibSave/scripts/')
+const outDir = path.resolve(__dirname, './extension/weiboSave')
+const scriptPath = path.resolve(__dirname, './weiboSave/scripts/')
 
 module.exports = {
     mode: 'production', // 设置为 'development' 或 'production'
@@ -14,7 +15,7 @@ module.exports = {
     },
     output: {
         path: outDir,
-        filename: '[name].js',
+        filename: 'scripts/[name].js',
     },
     resolve: {
         extensions: ['.ts', '.js', '.tsx'], // 解析的文件扩展名包括 .ts 和 .js
@@ -25,6 +26,14 @@ module.exports = {
                 path.resolve(outDir, 'weibosave.js')
             ],
         }),
+        new HtmlWebpackPlugin({
+            template: './weiboSave/index.html',  // 指定 HTML 模板文件
+            filename: 'index.html',  // 输出的 HTML 文件名
+            minify: {
+              collapseWhitespace: true,  // 压缩 HTML 文件中的空白字符
+              removeComments: true,  // 删除 HTML 文件中的注释
+            }
+        })
     ],
     module: {
         rules: [

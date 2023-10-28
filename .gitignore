@@ -52,3 +52,6 @@ package-lock.json
 
 # LICENSE
 *.LICENSE.txt
+
+# weibo save file
+myblog.js

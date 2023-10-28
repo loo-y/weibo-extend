@@ -4,6 +4,7 @@ const config: Config = {
     important: '#weibo-extend-weibosave',
     content: [
         './weiboSave/**/*.html',
+        './weiboSave/**/*.ts',
     ],
     theme: {
         extend: {

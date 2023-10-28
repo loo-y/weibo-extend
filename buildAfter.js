@@ -4,7 +4,8 @@ const path = require('path')
 const _ = require('lodash')
 const cheerio = require('cheerio')
 
-function getAllHtmlFiles(folderPath) {
+function getAllHtmlFiles(folderPath, excludes) {
+    excludes = excludes || []
     // 获取文件夹下所有文件和文件夹的名称
     const fileNames = fs.readdirSync(folderPath)
     // 过滤出所有 HTML 文件
@@ -12,7 +13,7 @@ function getAllHtmlFiles(folderPath) {
     _.map(fileNames, fileName => {
         const filePath = path.join(folderPath, fileName)
         const stats = fs.statSync(filePath)
-        if (stats.isFile() && path.extname(filePath) === '.html') {
+        if (stats.isFile() && path.extname(filePath) === '.html' && (!_.some(excludes, exclude=>{return fileName.includes(exclude)}))) {
             htmlFiles.push({
                 fileName: fileName.replace(/\.html$/, ''),
                 filePath: filePath,
@@ -29,7 +30,7 @@ function getAllHtmlFiles(folderPath) {
 
     _.each(subFolders, subFolder => {
         const subFolderPath = path.join(folderPath, subFolder)
-        const subFolderHtmlFiles = getAllHtmlFiles(subFolderPath)
+        const subFolderHtmlFiles = getAllHtmlFiles(subFolderPath, excludes)
         htmlFiles.push(...subFolderHtmlFiles)
     })
 
@@ -73,7 +74,7 @@ function extractInlineScripts(htmlFilePath, outputFilePath) {
 const buildAfter = () => {
     // get build path
     const distDir = extensionNextConfig.distDir
-    const htmlFiles = getAllHtmlFiles(distDir)
+    const htmlFiles = getAllHtmlFiles(distDir, [])
     if (_.isEmpty(htmlFiles)) return
 
     _.map(htmlFiles, htmlFile => {

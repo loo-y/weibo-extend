@@ -32,6 +32,7 @@ const FloatingPopup: React.FC = () => {
         const currentUrl = document.location.href || ``
         const theUid = currentUrl?.match(/u\/(\d+)/)?.[1] || ``
         dispatch(saveWeiboQueue({ uid: theUid }))
+        dispatch(updateShowFloatingPopup(false))
     }
     if (!showFloatingPopup) return null
 
@@ -44,7 +45,7 @@ const FloatingPopup: React.FC = () => {
                         handleSaveWeibo()
                     }}
                 >
-                    <span className="text-center">{`保存当前微博`}</span>
+                    <span className="text-center">{`备份当前用户微博`}</span>
                 </div>
                 {_.map(floatingPopupList, (floatingPopupItem, itemIndex) => {
                     const { title } = floatingPopupItem || {}

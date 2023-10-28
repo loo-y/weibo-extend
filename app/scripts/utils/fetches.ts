@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { UserType } from './interface'
 import { LimitPageOflikeUserFetch } from './constants'
+import { sleep } from './tools'
 
 interface IBaseFetchProps {
     url: string
@@ -112,11 +113,18 @@ export const fetchToGetLikeUsers = async ({ commentId }: { commentId: string | n
 
 export const fetchToGetImageBlob = async ({ imageUrl }: { imageUrl: string }): Promise<null | Blob> => {
     if (!imageUrl) return null
-    const response = await baseFetch({
-        url: imageUrl,
-        method: 'GET',
-    })
+    try {
+        const response = await baseFetch({
+            url: imageUrl,
+            method: 'GET',
+        })
 
-    const respBlob = await response.blob()
-    return respBlob
+        const respBlob = await response.blob()
+        // 防止请求过于密集
+        await sleep(3 * Math.random())
+        return respBlob
+    } catch (e) {
+        console.log(`fetchToGetImageBlob`, e)
+    }
+    return null
 }

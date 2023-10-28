@@ -251,15 +251,20 @@ export const unBlockOthersFans = createAsyncThunk(
 
 export const saveWeiboQueue = createAsyncThunk(
     'weiboExtendSlice/saveWeiboQueue',
-    async (params: { uid: string; pageIndex?: number } = { uid: '', pageIndex: 1 }, { dispatch, getState }: any) => {
+    async (
+        params: { uid: string; pageIndex?: number; start?: number } = { uid: '', pageIndex: 1 },
+        { dispatch, getState }: any
+    ) => {
         dispatch(updateStopBlockOthers(false))
         const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
         const otherUid = params?.uid || ''
         let pageIndex = params?.pageIndex || 1
+        const start = params.start || 0
         if (!otherUid) return
 
+        let isEnd = false
         // 获取单次保存的列表
-        const onePageCount = 30
+        const onePageCount = 100
         let onePageList: Record<string, any>[] = []
         for (let count = 0; count < onePageCount; ) {
             const blogsResp = await fetchToGetBlog({ uid: otherUid, pageIndex })
@@ -267,13 +272,17 @@ export const saveWeiboQueue = createAsyncThunk(
             const { list, hasMore } = blogsResp?.data || {}
             count += list?.length || 0
             onePageList = onePageList.concat(list)
+            isEnd = !hasMore
             if (!hasMore) break
         }
 
         console.log(`onePageList`, onePageList)
-        saveBlogToZip({
+        await saveBlogToZip({
             myBlog: onePageList,
+            start,
         })
+        if (isEnd) return null
+        dispatch(saveWeiboQueue({ uid: otherUid, pageIndex, start: start + (onePageList?.length || 0) }))
     }
 )
 

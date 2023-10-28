@@ -62,9 +62,14 @@ export const isType = <T>(value: unknown, targetType: new (...args: any[]) => T)
 
 interface ISaveBlogToZipProps {
     myBlog: Record<string, any>[]
+    start?: number
 }
-export const saveBlogToZip = async ({ myBlog }: ISaveBlogToZipProps) => {
+export const saveBlogToZip = async ({ myBlog, start }: ISaveBlogToZipProps) => {
     const zip = new JSZip()
+    const range = `${(start || 0) + 1}_${myBlog?.length || 0}`
+    const userInfo = myBlog?.[0]?.user || {}
+    const { screen_name, idstr } = userInfo || {}
+    const zipFileName = `${idstr}_${screen_name}_${range}`
 
     const extensionId = chrome.runtime.id
     const weibSaveFolder = `chrome-extension://${extensionId}/weiboSave`
@@ -80,17 +85,17 @@ export const saveBlogToZip = async ({ myBlog }: ISaveBlogToZipProps) => {
         fetchFileStringFromExtension(weibosaveJs),
         fetchFileStringFromExtension(weibosaveCss),
     ])
-    const container = zip.folder('weiboSave') as JSZip
+    const container = zip.folder(zipFileName) as JSZip
     container.file('index.html', indexHtmlText)
     const scriptsFolder = container.folder('scripts')
     scriptsFolder?.file(weibosaveJsName, weibosaveJsText)
     const styleFolder = container.folder('style')
     styleFolder?.file(weibosaveCssName, weibosaveCssText)
     await convertBlogList({ myBlog: myBlog, zipContainer: container })
-    // container.file('myblog.js', `window.myblog={"list": ${JSON.stringify(myBlog)}}`)
+
     zip.generateAsync({ type: 'blob' }).then(function (content) {
         // see FileSaver.js
-        FileSaver.saveAs(content, 'weiboSave.zip')
+        FileSaver.saveAs(content, `${zipFileName}.zip`)
     })
 }
 
@@ -112,7 +117,7 @@ const convertBlogList = async ({
             attitudes_status,
             comments_count,
             id,
-            idStr,
+            idstr,
             pic_ids,
             pic_infos,
             pic_num,
@@ -142,7 +147,7 @@ const convertBlogList = async ({
             attitudes_status,
             comments_count, // 回复数
             id,
-            idStr,
+            idstr,
             pic_ids,
             pic_infos,
             picShows,
@@ -157,14 +162,14 @@ const convertBlogList = async ({
     zipContainer.file('myblog.js', `window.myblog={"list": ${JSON.stringify(finalList)}}`)
 
     if (!_.isEmpty(totalPicShowList)) {
-        // TODO 方便测试只下载一张
-        const allPicsDownloads = await Promise.all([fetchToGetImageBlob({ imageUrl: totalPicShowList[0]?.url })])
         const imageFolder = zipContainer.folder('image')
-        _.each(allPicsDownloads, (picBolb, index) => {
-            if (picBolb) {
-                imageFolder?.file(totalPicShowList[index].picName, picBolb)
+        // 不能使用Promise.all 会被封调用
+        for (let picShow of totalPicShowList) {
+            const picBlob = await fetchToGetImageBlob({ imageUrl: picShow?.url })
+            if (picBlob) {
+                imageFolder?.file(picShow.picName, picBlob)
             }
-        })
+        }
     }
 }
 

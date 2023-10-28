@@ -19,7 +19,7 @@ const FloatingActionBall: React.FC = () => {
             <div onClick={handleClick}>
                 <ToolSettingSvg
                     asImg={true}
-                    className="w-9 h-9 rounded-2xl overflow-hidden shadow-lg shadow-red-500/50 hover:shadow-red-400/50 hover:mt-[0.5px] hover:ml-[0.5px]"
+                    className="w-9 h-9 rounded-2xl overflow-hidden shadow-lg shadow-red-500/50 hover:shadow-red-600/50 active:shadow-red-400/50 active:mt-[0.5px] active:ml-[0.5px]"
                 />
             </div>
             <FloatingPopup />

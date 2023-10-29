@@ -26,6 +26,7 @@
 <a id="download_install"></a>
 
 ## 下载及安装
+
 前往商店下载：<br/>
 
 Edge Addon👉 [微博扩展](https://microsoftedge.microsoft.com/addons/detail/kgadefmghkgpaapildhabgaindebmfdm)
@@ -43,17 +44,13 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 2. 解压缩安装包 weibo-extend
 <br><br>
 3. 打开 Chrome 浏览器，找到 管理扩展程序
-<br/><img src='./docs/images/SCR-20231029-tbmv.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tbmv.png' width="600px" /><br/><br>
 4. 打开开发者模式，然后点击 ```加载已解压的扩展程序```
-<br/><img src='./docs/images/SCR-20231029-tcdy.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tcdy.png' width="600px" /><br/><br>
 5. 在弹出的窗口中，选择刚才已解压好的文件夹 ```weibo-extend```
-<br/><img src='./docs/images/SCR-20231029-tdcw.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tdcw.png' width="600px" /><br/><br>
 6. 安装完毕之后，会在当前页面看到插件 ```微博扩展```
-<br/><img src='./docs/images/SCR-20231029-tdix.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tdix.png' width="600px" /><br/><br/>
 
 
 ------
@@ -98,35 +95,28 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 ### 备份功能
 
 1. 前往任意博主主页，或者自己的主页，点击右下角悬浮球
-<br/><img src='./docs/images/SCR-20231029-tdyx.jpeg' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tdyx.jpeg' width="600px" /><br/><br/>
 2. 弹出菜单中选择 ```备份当前用户微博```
-<br/><img src='./docs/images/SCR-20231029-tecc.png' width="400px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tecc.png' width="400px" /><br/><br/>
 3. 此时弹出备份浮层，选择 ```全部``` 或者 ```按日期```(根据日期范围备份)
-<br/><img src='./docs/images/SCR-20231029-tedz.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tedz.png' width="600px" /><br/><br/>
 4. 点击确认即开始备份。页面需保留，中途不要关闭。可切换至其他窗口继续正常浏览。
-<br/><img src='./docs/images/SCR-20231029-tegz.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tegz.png' width="600px" /><br/><br/>
 5. 备份中间会自动下载 zip 包，以每100条左右为单位进行备份。包名为该用户的uid + 用户名称 + 日期范围 + 当前保存条数范围 命名。
-<br/><img src='./docs/images/SCR-20231029-tets.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tets.png' width="600px" /><br/><br/>
 6. 包中文件夹，image 为当前备份微博的所有图片，video 为当前备份微博的所有视频。打开 ```index.html``` 查看
-<br/><img src='./docs/images/SCR-20231029-tewa.png' width="600px" /><br/>
+<br/><img src='./docs/images/SCR-20231029-tewa.png' width="600px" /><br/><br/>
 <br>
 
 
 ### 批量拉黑功能
 
 + 展开任意评论，鼠标移动右下角会出现 ```点赞列表```，点击打开点赞用户列表，可批量拉黑或解除拉黑
-<br/><img src='./docs/images/SCR-20231029-tffq.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tffq.png' width="600px" /><br/><br/>
 + 讨厌某个博主，连带讨厌 TA 的粉丝？可千万该博主粉丝列表，批量拉黑 TA 的粉丝
-<br/><img src='./docs/images/SCR-20231029-tiqn.png' width="600px" /><br/>
-<br>
+<br/><img src='./docs/images/SCR-20231029-tiqn.png' width="600px" /><br/><br/>
 + 自己是大V或者害怕被不认识的人关注？进入自己的粉丝列表，可批量移除非互关粉丝
-<br/><img src='./docs/images/SCR-20231029-tkjw.png' width="600px" /><br/>
+<br/><img src='./docs/images/SCR-20231029-tkjw.png' width="600px" /><br/><br/>
 <br>
 
 
@@ -135,32 +125,22 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 <a id="screenshots"></a>
 
 ## Screenshots
-**查看点赞列表**
-  <br/><img src='./docs/images/SCR-20231016-baex.png' width="600px" /><br/>
-
-
-**批量拉黑，批量解除拉黑**
-  <br/><img src='./docs/images/SCR-20231016-bbdq.png' width="600px" /><br/>
-
-
-**拉黑/被拉黑后仍可查看主页**
-  <br/><img src='./docs/images/SCR-20231016-bbms.jpeg' width="600px" /><br/>
-
-
-**批量拉黑某人的所有粉丝**
-  <br/><img src='./docs/images/SCR-20231027-cdvk.png' width="600px" /><br/>
-
-**悬浮球**
-  <br/><img src='./docs/images/SCR-20231029-bifo.png' width="600px" /><br/>
-
-**备份微博**
-  <br/><img src='./docs/images/SCR-20231029-bicn.png' width="600px" /><br/>
-
-**本地查看已备份的微博**
-  <br/><img src='./docs/images/SCR-20231029-bixb.jpeg' width="600px" /><br/>
-
-**备份微博支持视频下载播放**
-  <br/><img src='./docs/images/SCR-20231029-sgns.png' width="600px" /><br/>
++ **查看点赞列表**
+  <br/><img src='./docs/images/SCR-20231016-baex.png' width="600px" /><br/><br/>
++ **批量拉黑，批量解除拉黑**
+  <br/><img src='./docs/images/SCR-20231016-bbdq.png' width="600px" /><br/><br/>
++ **拉黑/被拉黑后仍可查看主页**
+  <br/><img src='./docs/images/SCR-20231016-bbms.jpeg' width="600px" /><br/><br/>
++ **批量拉黑某人的所有粉丝**
+  <br/><img src='./docs/images/SCR-20231027-cdvk.png' width="600px" /><br/><br/>
++ **悬浮球**
+  <br/><img src='./docs/images/SCR-20231029-bifo.png' width="600px" /><br/><br/>
++ **备份微博**
+  <br/><img src='./docs/images/SCR-20231029-bicn.png' width="600px" /><br/><br/>
++ **本地查看已备份的微博**
+  <br/><img src='./docs/images/SCR-20231029-bixb.jpeg' width="600px" /><br/><br/>
++ **备份微博支持视频下载播放**
+  <br/><img src='./docs/images/SCR-20231029-sgns.png' width="600px" /><br/><br/>
 <br />
 
 ------

@@ -284,7 +284,7 @@ export const saveWeiboQueue = createAsyncThunk(
         const endTimeShortSpan = (endDate && dayjs(endDate).add(1, 'day').unix()) || undefined
         let isEnd = false
         // 获取单次保存的列表
-        const onePageCount = 1
+        const onePageCount = 100
         let onePageList: Record<string, any>[] = []
         let totalCountSaveingWeibo = 0
         for (let count = 0; count < onePageCount; ) {

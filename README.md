@@ -48,7 +48,7 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 
 6. 批量拉黑某人的所有粉丝 (✔️)
 
-7. 支持备份自己/他人微博到本地 (✔️)
+7. 备份自己/他人微博到本地 (✔️) (支持图片+视频，支持转发)
 
 <br />
 
@@ -81,6 +81,8 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 **本地查看已备份的微博**
   <br/><img src='./docs/images/SCR-20231029-bixb.jpeg' width="600px" /><br/>
 
+**备份微博支持视频下载播放**
+  <br/><img src='./docs/images/SCR-20231029-sgns.png' width="600px" /><br/>
 <br />
 
 ------
@@ -90,4 +92,4 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 ### 一些说明
 1. 当前备份功能以 html 格式查看，每100条为单位存储成 zip 包，包名有具体条数说明。
 2. 每个备份包内，myblog.js 为当前包的 json 数据，images 文件夹包含了这 100 条数据中的图片，默认以大图存储。
-3. 备份功能目前还不支持视频以及转发的微博备份。
+3. ~~备份功能目前还不支持视频以及转发的微博备份。~~

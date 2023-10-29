@@ -167,7 +167,7 @@ export const fetchToGetVideoBlob = async ({ videoUrl }: { videoUrl: string }): P
 export const fetchToGetVideoBlobByXHR = async ({ videoUrl }: { videoUrl: string }): Promise<null | Blob> => {
     if (!videoUrl) return null
     try {
-        const responseBlob = await new Promise<Blob>((resolve, reject) => {
+        const responseBlob = await new Promise<Blob | null>((resolve, reject) => {
             const xhr = new XMLHttpRequest()
             xhr.open('get', videoUrl)
             xhr.responseType = 'blob'
@@ -175,6 +175,9 @@ export const fetchToGetVideoBlobByXHR = async ({ videoUrl }: { videoUrl: string 
                 resolve(xhr.response as Blob)
             }
             xhr.send()
+            xhr.onerror = () => {
+                resolve(null)
+            }
         })
         return responseBlob
     } catch (e) {

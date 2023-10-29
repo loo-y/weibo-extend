@@ -66,22 +66,22 @@ const BlockOthersFans = () => {
 
     return (
         <div className="flex flex-row gap-2 text-xs h-7 font-bold bg-transparent w-[38rem]">
-            <div className="flex flex-row rounded-xl bg-stone-200 px-2 items-center w-[14.5rem]">
+            <div className="flex flex-row rounded-xl bg-stone-200 px-2 items-center w-[16.5rem]">
                 <span>拉黑TA的所有粉丝</span>
                 <button
-                    className="h5 ml-2 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
+                    className="h5 ml-2 px-2 py-1 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
                     onClick={handleStartBlockBtn}
                 >
                     开始
                 </button>
                 <button
-                    className="h5 ml-2 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
+                    className="h5 ml-2 px-2 py-1 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
                     onClick={handleStopBtn}
                 >
                     停止
                 </button>
                 <button
-                    className="h5 ml-2 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
+                    className="h5 ml-2 px-2 py-1 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
                     onClick={handleStartUnBlockBtn}
                 >
                     解除
@@ -135,7 +135,7 @@ const RemoveMyFans = () => {
 
     return (
         <div className="flex flex-row gap-2 text-xs h-7 font-bold bg-transparent w-[38rem]">
-            <div className="flex flex-row rounded-xl bg-stone-200 px-2 items-center w-[13rem]">
+            <div className="flex flex-row rounded-xl bg-stone-200 px-2 items-center w-[14rem]">
                 <span>批量移除非互关粉丝：</span>
                 <input
                     type="number"
@@ -147,7 +147,7 @@ const RemoveMyFans = () => {
                     min={0}
                 />
                 <button
-                    className="h5 ml-2 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
+                    className="h5 ml-2  px-2 py-1 appearance-none border-none bg-orange-500 text-white font-bold text-xs rounded-lg cursor-pointer hover:bg-orange-600"
                     onClick={handleStartBtn}
                 >
                     开始

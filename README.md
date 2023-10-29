@@ -96,6 +96,7 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 ## 如何使用
 
 ### 备份功能
+
 1. 前往任意博主主页，或者自己的主页，点击右下角悬浮球
 <br/><img src='./docs/images/SCR-20231029-tdyx.jpeg' width="600px" /><br/>
 <br>
@@ -117,6 +118,7 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 
 
 ### 批量拉黑功能
+
 + 展开任意评论，鼠标移动右下角会出现 ```点赞列表```，点击打开点赞用户列表，可批量拉黑或解除拉黑
 <br/><img src='./docs/images/SCR-20231029-tffq.png' width="600px" /><br/>
 <br>

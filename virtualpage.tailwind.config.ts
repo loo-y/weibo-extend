@@ -4,6 +4,7 @@ const config: Config = {
     important: '#weibo-extend-virtual-root',
     content: [
         './app/scripts/reactVirtual/**/*.{js,ts,jsx,tsx}',
+        "./node_modules/tailwind-datepicker-react/dist/**/*.js", 
     ],
     theme: {
         extend: {

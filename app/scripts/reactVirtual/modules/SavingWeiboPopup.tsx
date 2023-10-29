@@ -15,6 +15,7 @@ const SavingWeiboPopup = () => {
     }
 
     const handleYesStop = () => {
+        setShowStopConfirm(false)
         dispatch(
             updateState({
                 stopSaving: true,

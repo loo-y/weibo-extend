@@ -5,6 +5,7 @@ const config: Config = {
     content: [
         './weiboSave/**/*.html',
         './weiboSave/**/*.ts',
+        "./node_modules/tailwind-datepicker-react/dist/**/*.js", 
     ],
     theme: {
         extend: {

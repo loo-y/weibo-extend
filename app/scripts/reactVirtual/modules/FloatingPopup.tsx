@@ -5,7 +5,7 @@ import {
     blockUser,
     unblockUser,
     getWeiboExtendState,
-    clearRequestQueue,
+    updateState,
     updateShowFloatingPopup,
     saveWeiboQueue,
 } from '../slice'
@@ -36,7 +36,13 @@ const FloatingPopup: React.FC = () => {
             setTimeout(() => alert(`请先访问个人主页，再进行备份！`), 50)
             return
         }
-        dispatch(saveWeiboQueue({ uid: theUid }))
+        dispatch(
+            updateState({
+                stopSaving: false,
+                showWeiboPop: true,
+            })
+        )
+        // dispatch(saveWeiboQueue({ uid: theUid }))
     }
     if (!showFloatingPopup) return null
 

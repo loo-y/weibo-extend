@@ -294,19 +294,18 @@ export const saveWeiboQueue = createAsyncThunk(
             pageIndex++
             const { list, hasMore, total } = blogsResp?.data || {}
             totalCountSaveingWeibo = total || totalCountSaveingWeibo
+            dispatch(updateState({ totalCountSaveingWeibo }))
             count += list?.length || 0
             onePageList = onePageList.concat(list)
             isEnd = !hasMore
             if (!hasMore) break
         }
 
-        dispatch(updateState({ totalCountSaveingWeibo }))
-
         console.log(`onePageList`, onePageList)
         await saveBlogToZip({
             myBlog: onePageList,
             start,
-            eachCallback: ({ weiboCount, weiboPicCount }) => {
+            eachCallback: ({ weiboCount, weiboPicCount, weiboVideoCount }) => {
                 const { stopSaving } = getWeiboExtendState(getState())
                 if (stopSaving) {
                     location.reload()
@@ -315,7 +314,8 @@ export const saveWeiboQueue = createAsyncThunk(
                 dispatch(
                     updateState({
                         currentSavingWeiboCount: start + weiboCount,
-                        currentSavingWeiboPicCount: weiboPicCount,
+                        currentSavingWeiboPicCount: weiboPicCount || 0,
+                        currentSavingWeiboVideoCount: weiboVideoCount || 0,
                     })
                 )
             },
@@ -327,6 +327,7 @@ export const saveWeiboQueue = createAsyncThunk(
                     showWeiboPop: WeiboPopType.hidden,
                     currentSavingWeiboCount: 0,
                     currentSavingWeiboPicCount: 0,
+                    currentSavingWeiboVideoCount: 0,
                 })
             )
             return null

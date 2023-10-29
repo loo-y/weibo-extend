@@ -9,8 +9,14 @@ import { WeiboPopType } from '../interface'
 const SavingWeiboPopup = () => {
     const state = useAppSelector(getWeiboExtendState)
     const dispatch = useAppDispatch()
-    const { showWeiboPop, totalCountSaveingWeibo, currentSavingWeiboCount, currentSavingWeiboPicCount, savingUid } =
-        state || {}
+    const {
+        showWeiboPop,
+        totalCountSaveingWeibo,
+        currentSavingWeiboCount,
+        currentSavingWeiboPicCount,
+        currentSavingWeiboVideoCount,
+        savingUid,
+    } = state || {}
     const [savingStartDate, setSavingStartDate] = useState<Date | undefined>(undefined)
     const [savingEndDate, setSavingEndDate] = useState<Date | undefined>(undefined)
     const [savingType, setSavingType] = useState(-1)
@@ -201,17 +207,21 @@ const SavingWeiboPopup = () => {
                         <span>{`请勿关闭当前页面，正在抓紧备份。`}</span>
                     </div>
                     <div className="flex ml-1 mt-1 subtitle flex-row w-full text-xs text-gray-800 text-opacity-70 gap-2">
-                        <div className="after:content-['|'] after:ml-2 after:text-gray-600 after:text-opacity-30 ">
+                        <div className="">
                             <span>
                                 {totalCountSaveingWeibo ? `一共${totalCountSaveingWeibo}条微博` : `当前微博总数：未知`}
                             </span>
                         </div>
                         {currentSavingWeiboCount ? (
-                            <div>
+                            <div className="before:content-['|'] before:mr-2 before:text-gray-600 before:text-opacity-30 ">
                                 <span>{`正在备份第${currentSavingWeiboCount || 'X'}条`}</span>
                             </div>
                         ) : null}
-                        {currentSavingWeiboPicCount ? (
+                        {currentSavingWeiboVideoCount ? (
+                            <div className="before:content-['|'] before:mr-2 before:text-gray-600 before:text-opacity-30 ">
+                                <span>{`正在下载第${currentSavingWeiboVideoCount}个视频`}</span>
+                            </div>
+                        ) : currentSavingWeiboPicCount ? (
                             <div className="before:content-['|'] before:mr-2 before:text-gray-600 before:text-opacity-30 ">
                                 <span>{`正在下载第${currentSavingWeiboPicCount}张图片`}</span>
                             </div>

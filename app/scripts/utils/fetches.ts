@@ -7,20 +7,31 @@ interface IBaseFetchProps {
     url: string
     method?: 'POST' | 'GET'
     body?: Record<string, any>
+    headers?: Record<string, any>
+    mode?: string
 }
 
-const baseFetch = ({ url, body, method }: IBaseFetchProps) => {
+const baseFetch = ({ url, body, method, headers, mode }: IBaseFetchProps) => {
     method = method || 'POST'
-    return fetch(url, {
-        method,
-        headers: {
+    const requestHeaders = _.omitBy(
+        {
             accept: 'application/json, text/plain, */*',
             'x-requested-with': 'XMLHttpRequest',
             'x-xsrf-token': globalThis.xsrfToken,
             'content-type': 'application/json;charset=UTF-8',
+            ...headers,
         },
+        _.isNil
+    )
+    let options: Record<string, any> = {
+        method,
+        headers: requestHeaders,
         body: body ? JSON.stringify(body) : undefined,
-    })
+    }
+    if (mode) {
+        options.mode = mode
+    }
+    return fetch(url, options)
 }
 
 const fetchfetchToGetLikeUsersByPage = async ({
@@ -119,6 +130,30 @@ export const fetchToGetImageBlob = async ({ imageUrl }: { imageUrl: string }): P
             method: 'GET',
         })
 
+        const respBlob = await response.blob()
+        // 防止请求过于密集
+        await sleep(3 * Math.random())
+        return respBlob
+    } catch (e) {
+        console.log(`fetchToGetImageBlob`, e)
+    }
+    return null
+}
+
+export const fetchToGetVideoBlob = async ({ videoUrl }: { videoUrl: string }): Promise<null | Blob> => {
+    if (!videoUrl) return null
+    try {
+        const response = await baseFetch({
+            url: videoUrl,
+            method: 'GET',
+            headers: {
+                'content-type': undefined,
+                accept: '*/*',
+                'sec-fetch-dest': 'video',
+                'accept-encoding': 'identity;q=1, *;q=0',
+            },
+            mode: 'no-cors',
+        })
         const respBlob = await response.blob()
         // 防止请求过于密集
         await sleep(3 * Math.random())

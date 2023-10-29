@@ -13,6 +13,8 @@ const imageContainerClass = `flex justify-start items-center flex-wrap`
 const imageBoxClass = `flex w-1/3 h-52 p-1`
 const imageClass = `cursor-pointer w-full h-full object-cover rounded-xl`
 const retweetPostClass = `flex reweetpost bg-gray-100 pt-5 pb-8 px-8 flex my-2 rounded-md flex-col`
+const videoContainerClass = `video flex flex-col items-center flex-wrap gap-2 mb-2`
+const videoClass = `cursor-pointer object-cover rounded-xl max-h-[38rem]  w-fit`
 
 const start=async ()=>{
     console.log(`start`, start)
@@ -38,7 +40,7 @@ const start=async ()=>{
 start()
 
 const appendBlog = ({$container, blogItem, postClass}: Record<string, any>)=>{
-    const { text, text_raw, picShows, region_name, source, created_at, user} = blogItem || {}
+    const { text, text_raw, picShows, region_name, source, created_at, user, mediaInfoList } = blogItem || {}
     let $postInside = $('<div>').addClass(postInsideClass);
     const {idstr: user_idstr, screen_name: user_screen_name, profile_url: user_profile_url } = user || {}
     if(user_idstr && user_screen_name){
@@ -86,6 +88,20 @@ const appendBlog = ({$container, blogItem, postClass}: Record<string, any>)=>{
         })
 
         $postInside.append($imageContainer)
+    }
+
+    // 视频
+    if(!_.isEmpty(mediaInfoList)){
+        let $videoContainer = $('<div>').addClass(videoContainerClass);
+        _.map(mediaInfoList, mediaItem=>{
+            const { format, media_id} = mediaItem
+            const srcUrl = `./video/${media_id}.${format}`
+            let $video = $('<video>').attr('src', srcUrl);
+            $video.attr("controls", true)
+            $video.addClass(videoClass);
+            $videoContainer.append($video)
+        })
+        $postInside.append($videoContainer)
     }
     const $post = $('<div>').addClass(postClass)
     $post.append($postInside)

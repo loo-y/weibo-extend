@@ -146,6 +146,10 @@ const convertBlogList = async ({
             mix_media_info,
         } = blogItem || {}
 
+        if (!_.isEmpty(page_info?.media_info)) {
+            tempVideoList.push(page_info.media_info)
+        }
+
         let picShows =
             !pic_num || _.isEmpty(pic_infos)
                 ? []
@@ -277,6 +281,7 @@ const convertBlogList = async ({
 
         // 视频
         if (!_.isEmpty(tempVideoList)) {
+            console.log(`tempVideoList`, tempVideoList)
             for (let videoInfo of tempVideoList) {
                 const { author_mid, h265_mp4_hd, mp4_720p_mp4, mp4_hd_url, media_id, format } = videoInfo || {}
                 const videoUrl = h265_mp4_hd || mp4_720p_mp4 || mp4_hd_url
@@ -312,7 +317,11 @@ const convertBlogList = async ({
         }
 
         if (!_.isEmpty(retweeted_mediaInfoList) && !_.isEmpty(retweetedBlog)) {
-            retweetedBlog.mediaInfoList = [...retweetedBlog.mediaInfoList].concat(retweeted_mediaInfoList)
+            if (_.isEmpty(retweetedBlog.mediaInfoList)) {
+                retweetedBlog.mediaInfoList = retweeted_mediaInfoList
+            } else {
+                retweetedBlog.mediaInfoList = retweetedBlog.mediaInfoList.conat(retweeted_mediaInfoList)
+            }
         }
 
         finalList.push({

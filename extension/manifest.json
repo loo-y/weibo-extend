@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "微博扩展",
     "description": "微博扩展插件 - 支持一键拉黑点赞",
-    "version": "1.3",
+    "version": "1.4",
     "permissions": ["scripting"],
     "host_permissions": ["https://weibo.com/*", "https://*.weibo.com/*"],
     "icons": {

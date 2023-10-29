@@ -39,6 +39,7 @@ const DatepickerComp = ({ title, callback, classNames }: IDatepickerCompProps) =
         ...defaultOptions,
         title: title || defaultOptions.title,
     }
+
     return (
         <div onBlur={handleContainerBlur} ref={datepickerRef} onClick={handleContainerClick} className="relative">
             <Datepicker

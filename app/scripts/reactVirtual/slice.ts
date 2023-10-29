@@ -8,11 +8,13 @@ import {
     fetchToGetOthersFriends,
     fetchToGetMyFriends,
     fetchToGetBlog,
+    fetchToSearchProfile,
 } from './API'
-import { WeiboExtendState } from './interface'
+import { WeiboExtendState, WeiboPopType } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
 import { saveBlogToZip } from '../utils/tools'
 import _ from 'lodash'
+import dayjs from 'dayjs'
 
 // define a queue to store api request
 type APIFunc = (typeof API)[keyof typeof API]
@@ -23,6 +25,7 @@ const initialState: WeiboExtendState & Record<string, any> = {
     requestInQueueFetching: false,
     showFloatingPopup: false,
     followersRemoved: [],
+    showWeiboPop: WeiboPopType.hidden,
 }
 
 type RequestCombo = {
@@ -249,32 +252,43 @@ export const unBlockOthersFans = createAsyncThunk(
     }
 )
 
+interface ISaveweiboQueueProps {
+    uid: string
+    pageIndex?: number
+    start?: number
+    startDate?: Date
+    endDate?: Date
+}
 export const saveWeiboQueue = createAsyncThunk(
     'weiboExtendSlice/saveWeiboQueue',
     async (
-        params: { uid: string; pageIndex?: number; start?: number } = { uid: '', pageIndex: 1 },
+        { uid = '', pageIndex: paramsPageIndex = 1, start: paramsStart, startDate, endDate }: ISaveweiboQueueProps,
         { dispatch, getState }: any
     ) => {
         dispatch(updateStopBlockOthers(false))
         dispatch(
             updateState({
                 stopSaving: false,
-                showWeiboPop: true,
+                showWeiboPop: WeiboPopType.saving,
             })
         )
         const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
-        const otherUid = params?.uid || ''
-        let pageIndex = params?.pageIndex || 1
-        const start = params.start || 0
+        const otherUid = uid || ''
+        let pageIndex = paramsPageIndex || 1
+        const start = paramsStart || 0
         if (!otherUid) return
-
+        const startTimeShortSpan = (startDate && dayjs(startDate).unix()) || undefined
+        const endTimeShortSpan = (endDate && dayjs(endDate).unix()) || undefined
         let isEnd = false
         // 获取单次保存的列表
         const onePageCount = 100
         let onePageList: Record<string, any>[] = []
         let totalCountSaveingWeibo = 0
         for (let count = 0; count < onePageCount; ) {
-            const blogsResp = await fetchToGetBlog({ uid: otherUid, pageIndex })
+            const blogsResp =
+                startTimeShortSpan && endTimeShortSpan
+                    ? await fetchToSearchProfile({ uid: otherUid, pageIndex, startTimeShortSpan, endTimeShortSpan })
+                    : await fetchToGetBlog({ uid: otherUid, pageIndex })
             pageIndex++
             const { list, hasMore, total } = blogsResp?.data || {}
             totalCountSaveingWeibo = total || totalCountSaveingWeibo
@@ -308,14 +322,16 @@ export const saveWeiboQueue = createAsyncThunk(
         if (isEnd || stopSaving) {
             dispatch(
                 updateState({
-                    showWeiboPop: false,
+                    showWeiboPop: WeiboPopType.hidden,
                     currentSavingWeiboCount: 0,
                     currentSavingWeiboPicCount: 0,
                 })
             )
             return null
         }
-        dispatch(saveWeiboQueue({ uid: otherUid, pageIndex, start: start + (onePageList?.length || 0) }))
+        dispatch(
+            saveWeiboQueue({ uid: otherUid, pageIndex, startDate, endDate, start: start + (onePageList?.length || 0) })
+        )
     }
 )
 

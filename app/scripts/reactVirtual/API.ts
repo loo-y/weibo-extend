@@ -189,3 +189,31 @@ export const fetchToGetBlog = async (props: { uid: string; since_id?: string; pa
 
     return { data, status }
 }
+
+export const fetchToSearchProfile = async (props: {
+    uid: string
+    startTimeShortSpan?: number
+    endTimeShortSpan?: number
+    pageIndex?: number
+}) => {
+    let data = null,
+        status = false
+    const { uid, pageIndex = 1, startTimeShortSpan, endTimeShortSpan } = props || {}
+
+    if (!uid || !startTimeShortSpan || !endTimeShortSpan) return { data, status }
+
+    try {
+        const response = await baseFetch({
+            url: `//weibo.com/ajax/statuses/searchProfile?uid=${uid}&page=${pageIndex}&starttime=${startTimeShortSpan}&endtime=${endTimeShortSpan}&hasori=1&hasret=1&hastext=1&haspic=1&hasvideo=1&hasmusic=1`,
+            method: 'GET',
+        })
+        const respJson = await response.json()
+        const realData = respJson?.data || {}
+        // 防止过快导致接口请求被封
+        await sleep(0.3)
+        data = { ...(realData || {}), uid, hasMore: realData?.list?.length > 5 }
+        status = true
+    } catch (e) {
+        console.log(`fetchToGetFriends`, e)
+    }
+}

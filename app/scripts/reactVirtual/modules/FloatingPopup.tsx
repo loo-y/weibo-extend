@@ -10,6 +10,7 @@ import {
     saveWeiboQueue,
 } from '../slice'
 import { floatingPopupList, weiboMainHost } from '../constants'
+import { WeiboPopType } from '../interface'
 
 const FloatingPopup: React.FC = () => {
     const state = useAppSelector(getWeiboExtendState)
@@ -39,7 +40,8 @@ const FloatingPopup: React.FC = () => {
         dispatch(
             updateState({
                 stopSaving: false,
-                showWeiboPop: true,
+                showWeiboPop: WeiboPopType.typeSelect,
+                savingUid: theUid,
             })
         )
         // dispatch(saveWeiboQueue({ uid: theUid }))

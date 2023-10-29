@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Datepicker from 'tailwind-datepicker-react'
 import { IOptions } from 'tailwind-datepicker-react/types/Options'
 import SvgCalendarIcon from './SvgCalendarIcon'
@@ -10,7 +10,7 @@ interface IDatepickerCompProps {
     title?: string
     callback?: (info: any) => void
 }
-const DatepickerComp = ({ title, callback, classNames }: IDatepickerCompProps) => {
+const DatepickerComp: React.FC<IDatepickerCompProps> = ({ title, callback, classNames }: IDatepickerCompProps) => {
     const [showDatepicker, setShowDatepicker] = useState(false)
     const [selectedDate, setSelectedDate] = useState<string>('')
     const datepickerRef = useRef(null)

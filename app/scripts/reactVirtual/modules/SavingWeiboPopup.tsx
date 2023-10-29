@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import _ from 'lodash'
 import DatepickerComp from '../components/DatepickerComp'
 import { useAppSelector, useAppDispatch } from '../hooks'
@@ -55,13 +55,17 @@ const SavingWeiboPopup = () => {
             setSavingEndDate(undefined)
             dispatch(saveWeiboQueue({ uid: savingUid }))
         } else {
-            dispatch(
-                saveWeiboQueue({
-                    uid: savingUid,
-                    startDate: savingStartDate,
-                    endDate: savingEndDate,
-                })
-            )
+            if (!savingStartDate || !savingEndDate) {
+                alert(`请先选择日期`)
+            } else {
+                dispatch(
+                    saveWeiboQueue({
+                        uid: savingUid,
+                        startDate: savingStartDate,
+                        endDate: savingEndDate,
+                    })
+                )
+            }
         }
     }
 
@@ -89,6 +93,7 @@ const SavingWeiboPopup = () => {
                                 name="saving_type"
                                 id="saving_type_all"
                                 value="0"
+                                checked={savingType == 0}
                                 onChange={() => {
                                     handleSelectSaveingType(0)
                                 }}
@@ -103,6 +108,7 @@ const SavingWeiboPopup = () => {
                                 name="saving_type"
                                 id="saving_type_bydate"
                                 value="1"
+                                checked={savingType == 1}
                                 onChange={() => {
                                     handleSelectSaveingType(1)
                                 }}

@@ -1,3 +1,5 @@
+'use client'
+import React from 'react'
 interface ISvgCompProps {
     svgString: string
     asImg?: boolean

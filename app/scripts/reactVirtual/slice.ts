@@ -270,6 +270,7 @@ export const saveWeiboQueue = createAsyncThunk(
             updateState({
                 stopSaving: false,
                 showWeiboPop: WeiboPopType.saving,
+                totalCountSaveingWeibo: 0,
             })
         )
         const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
@@ -278,7 +279,8 @@ export const saveWeiboQueue = createAsyncThunk(
         const start = paramsStart || 0
         if (!otherUid) return
         const startTimeShortSpan = (startDate && dayjs(startDate).unix()) || undefined
-        const endTimeShortSpan = (endDate && dayjs(endDate).unix()) || undefined
+        // 0点问题，所以要加 1 day
+        const endTimeShortSpan = (endDate && dayjs(endDate).add(1, 'day').unix()) || undefined
         let isEnd = false
         // 获取单次保存的列表
         const onePageCount = 100

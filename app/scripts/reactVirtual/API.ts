@@ -216,4 +216,6 @@ export const fetchToSearchProfile = async (props: {
     } catch (e) {
         console.log(`fetchToGetFriends`, e)
     }
+
+    return { data, status }
 }

@@ -1,7 +1,7 @@
 import JSZip from 'jszip'
 const FileSaver = require('file-saver')
 import _ from 'lodash'
-import { fetchToGetImageBlob, fetchToGetVideoBlob } from './fetches'
+import { fetchToGetImageBlob, fetchToGetVideoBlobByXHR } from './fetches'
 
 // watch Element by MutationObserver
 export const watchElement = ({
@@ -63,16 +63,17 @@ export const isType = <T>(value: unknown, targetType: new (...args: any[]) => T)
 interface ISaveBlogToZipProps {
     myBlog: Record<string, any>[]
     start?: number
+    attachedName?: string
     eachCallback?: (info: any) => void
 }
-export const saveBlogToZip = async ({ myBlog, start, eachCallback }: ISaveBlogToZipProps) => {
+export const saveBlogToZip = async ({ myBlog, start, attachedName, eachCallback }: ISaveBlogToZipProps) => {
     const zip = new JSZip()
-    start = start || 1
-    let end = start + (myBlog?.length || 0)
+    start = (start || 0) + 1
+    let end = start - 1 + (myBlog?.length || 0)
     const range = `${start}_${end}`
     const userInfo = myBlog?.[0]?.user || {}
     const { screen_name, idstr } = userInfo || {}
-    const zipFileName = `${idstr}_${screen_name}_${range}`
+    const zipFileName = _.compact([idstr, screen_name, attachedName, range]).join('_')
 
     const extensionId = chrome.runtime.id
     const weibSaveFolder = `chrome-extension://${extensionId}/weiboSave`
@@ -120,7 +121,11 @@ const convertBlogList = async ({
     let _count = 0
     for (let blogItem of myBlog) {
         _count++
-
+        let _count_pic_count = 0,
+            _count_video_count = 0
+        let mediaInfoList = [],
+            retweeted_mediaInfoList = []
+        let tempVideoList: Record<string, any>[] = []
         const {
             created_at,
             attitudes_count,
@@ -138,8 +143,10 @@ const convertBlogList = async ({
             text_raw,
             retweeted_status,
             page_info,
+            mix_media_info,
         } = blogItem || {}
-        const picShows =
+
+        let picShows =
             !pic_num || _.isEmpty(pic_infos)
                 ? []
                 : _.compact(
@@ -152,6 +159,24 @@ const convertBlogList = async ({
                           }
                       })
                   )
+        if (!_.isEmpty(mix_media_info?.items)) {
+            _.map(mix_media_info.items, item => {
+                const { type, data } = item || {}
+                if (type == `pic`) {
+                    const url = data?.large?.url || undefined
+                    picShows.push({
+                        picName: url.match(/\/([\da-zA-Z]+\.[a-z]{3,4})$/)?.[1] || `${data?.pic_id}.jpg`,
+                        url,
+                    })
+                }
+                if (type == `video`) {
+                    const _media_info = data?.media_info || {}
+                    tempVideoList.push({
+                        ..._media_info,
+                    })
+                }
+            })
+        }
         // totalPicShowList = totalPicShowList.concat(picShows)
         eachCallback &&
             eachCallback({
@@ -159,7 +184,7 @@ const convertBlogList = async ({
                 weiboPicCount: 0,
                 weiboVideoCount: 0,
             })
-        let _count_pic_count = 0
+
         // 不能使用Promise.all 会被封调用
         for (let picShow of picShows) {
             _count_pic_count++
@@ -174,31 +199,9 @@ const convertBlogList = async ({
             }
         }
 
-        let mediaInfoList = []
-        // 视频
-        if (!_.isEmpty(page_info?.media_info)) {
-            const { author_mid, h265_mp4_hd, mp4_720p_mp4, mp4_hd_url, media_id, format } = page_info?.media_info || {}
-            const downloadUrl = h265_mp4_hd || mp4_720p_mp4 || mp4_hd_url
-            mediaInfoList.push({
-                format,
-                author_mid,
-                media_id,
-                url: downloadUrl,
-            })
-            eachCallback &&
-                eachCallback({
-                    weiboCount: _count,
-                    weiboVideoCount: 1,
-                })
-            const videoBlob = await fetchToGetVideoBlob({ videoUrl: downloadUrl })
-            if (videoBlob) {
-                videoFolder?.file(`${media_id}.${format}`, videoBlob)
-            }
-        }
-
-        let retweetedBlog = {}
+        let retweetedBlog: Record<string, any> = {}
         if (!_.isEmpty(retweeted_status)) {
-            const retweeted_status_picShows =
+            let retweeted_status_picShows =
                 !retweeted_status.pic_num || _.isEmpty(retweeted_status.pic_infos)
                     ? []
                     : _.compact(
@@ -211,6 +214,25 @@ const convertBlogList = async ({
                               }
                           })
                       )
+            if (!_.isEmpty(retweeted_status?.mix_media_info?.items)) {
+                _.map(retweeted_status.mix_media_info.items, item => {
+                    const { type, data } = item || {}
+                    if (type == `pic`) {
+                        const url = data?.large?.url || undefined
+                        retweeted_status_picShows.push({
+                            picName: url.match(/\/([\da-zA-Z]+\.[a-z]{3,4})$/)?.[1] || `${data?.pic_id}.jpg`,
+                            url,
+                        })
+                    }
+                    if (type == `video`) {
+                        const _media_info = data?.media_info || {}
+                        tempVideoList.push({
+                            ..._media_info,
+                        })
+                    }
+                })
+            }
+
             // 不能使用Promise.all 会被封调用
             for (let retweetPicShow of retweeted_status_picShows) {
                 _count_pic_count++
@@ -224,7 +246,6 @@ const convertBlogList = async ({
                     imageFolder?.file(retweetPicShow.picName, picBlob)
                 }
             }
-
             const retweetFromUser = _.isEmpty(retweeted_status?.user)
                 ? undefined
                 : {
@@ -252,6 +273,46 @@ const convertBlogList = async ({
                 text: retweeted_status.text,
                 text_raw: retweeted_status.text_raw,
             }
+        }
+
+        // 视频
+        if (!_.isEmpty(tempVideoList)) {
+            for (let videoInfo of tempVideoList) {
+                const { author_mid, h265_mp4_hd, mp4_720p_mp4, mp4_hd_url, media_id, format } = videoInfo || {}
+                const videoUrl = h265_mp4_hd || mp4_720p_mp4 || mp4_hd_url
+                _count_video_count++
+                if (author_mid == mid) {
+                    mediaInfoList.push({
+                        format,
+                        author_mid,
+                        media_id,
+                        url: videoUrl,
+                    })
+                } else if (author_mid == retweetedBlog?.mid) {
+                    retweeted_mediaInfoList.push({
+                        format,
+                        author_mid,
+                        media_id,
+                        url: videoUrl,
+                    })
+                }
+
+                eachCallback &&
+                    eachCallback({
+                        weiboCount: _count,
+                        weiboVideoCount: _count_video_count,
+                    })
+                const videoFileName = `${media_id}.${format}`
+                // const videoBlob = await fetchToGetVideoBlob({ videoUrl: videoUrl })
+                const videoBlob = await fetchToGetVideoBlobByXHR({ videoUrl })
+                if (videoBlob) {
+                    videoFolder?.file(videoFileName, videoBlob)
+                }
+            }
+        }
+
+        if (!_.isEmpty(retweeted_mediaInfoList) && !_.isEmpty(retweetedBlog)) {
+            retweetedBlog.mediaInfoList = [...retweetedBlog.mediaInfoList].concat(retweeted_mediaInfoList)
         }
 
         finalList.push({

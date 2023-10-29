@@ -278,12 +278,13 @@ export const saveWeiboQueue = createAsyncThunk(
         let pageIndex = paramsPageIndex || 1
         const start = paramsStart || 0
         if (!otherUid) return
+
         const startTimeShortSpan = (startDate && dayjs(startDate).unix()) || undefined
         // 0点问题，所以要加 1 day
         const endTimeShortSpan = (endDate && dayjs(endDate).add(1, 'day').unix()) || undefined
         let isEnd = false
         // 获取单次保存的列表
-        const onePageCount = 100
+        const onePageCount = 1
         let onePageList: Record<string, any>[] = []
         let totalCountSaveingWeibo = 0
         for (let count = 0; count < onePageCount; ) {
@@ -302,9 +303,26 @@ export const saveWeiboQueue = createAsyncThunk(
         }
 
         console.log(`onePageList`, onePageList)
+        if (_.isEmpty(onePageList)) {
+            dispatch(
+                updateState({
+                    showWeiboPop: WeiboPopType.hidden,
+                    currentSavingWeiboCount: 0,
+                    currentSavingWeiboPicCount: 0,
+                    currentSavingWeiboVideoCount: 0,
+                })
+            )
+            return null
+        }
+
+        const attachedName =
+            startDate && endDate
+                ? dayjs(startDate).format('YYYYMMDD') + '_' + dayjs(endDate).format('YYYYMMDD')
+                : `total`
         await saveBlogToZip({
             myBlog: onePageList,
             start,
+            attachedName,
             eachCallback: ({ weiboCount, weiboPicCount, weiboVideoCount }) => {
                 const { stopSaving } = getWeiboExtendState(getState())
                 if (stopSaving) {

@@ -17,4 +17,5 @@ export enum WeiboPopType {
     typeSelect = `typeSelect`,
     saving = `saving`,
     stop = `stop`,
+    completed = `completed`,
 }

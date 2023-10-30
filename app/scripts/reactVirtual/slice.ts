@@ -270,6 +270,7 @@ export const saveWeiboQueue = createAsyncThunk(
             updateState({
                 stopSaving: false,
                 showWeiboPop: WeiboPopType.saving,
+                currentSavingWeiboCount: 0,
                 totalCountSaveingWeibo: 0,
             })
         )
@@ -306,8 +307,8 @@ export const saveWeiboQueue = createAsyncThunk(
         if (_.isEmpty(onePageList)) {
             dispatch(
                 updateState({
-                    showWeiboPop: WeiboPopType.hidden,
-                    currentSavingWeiboCount: 0,
+                    showWeiboPop: WeiboPopType.completed,
+                    // currentSavingWeiboCount: 0,
                     currentSavingWeiboPicCount: 0,
                     currentSavingWeiboVideoCount: 0,
                 })
@@ -342,8 +343,8 @@ export const saveWeiboQueue = createAsyncThunk(
         if (isEnd || stopSaving) {
             dispatch(
                 updateState({
-                    showWeiboPop: WeiboPopType.hidden,
-                    currentSavingWeiboCount: 0,
+                    showWeiboPop: WeiboPopType.completed,
+                    // currentSavingWeiboCount: 0,
                     currentSavingWeiboPicCount: 0,
                     currentSavingWeiboVideoCount: 0,
                 })

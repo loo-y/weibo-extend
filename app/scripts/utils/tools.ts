@@ -116,6 +116,7 @@ const convertBlogList = async ({
 }: ISaveBlogToZipProps & { zipContainer: JSZip; eachCallback?: (info: any) => void }): Promise<void> => {
     const imageFolder = zipContainer.folder('image')
     const videoFolder = zipContainer.folder('video')
+    const userInfo = myBlog?.[0]?.user || {}
     let totalPicShowList: { picName: string; url: string }[] = []
     let finalList: typeof myBlog = []
     let _count = 0
@@ -160,7 +161,7 @@ const convertBlogList = async ({
                           const url = picInfo?.large?.url || undefined
                           if (!url) return undefined
                           return {
-                              picName: url.match(/\/([\da-zA-Z]+\.[a-z]{3,4})$/)?.[1] || `${picKey}.jpg`,
+                              picName: matchImageFromUrl(url) || `${picKey}.jpg`,
                               url,
                           }
                       })
@@ -171,7 +172,7 @@ const convertBlogList = async ({
                 if (type == `pic`) {
                     const url = data?.large?.url || undefined
                     picShows.push({
-                        picName: url.match(/\/([\da-zA-Z]+\.[a-z]{3,4})$/)?.[1] || `${data?.pic_id}.jpg`,
+                        picName: matchImageFromUrl(url) || `${data?.pic_id}.jpg`,
                         url,
                     })
                 }
@@ -215,7 +216,7 @@ const convertBlogList = async ({
                               const url = picInfo?.large?.url || undefined
                               if (!url) return undefined
                               return {
-                                  picName: url.match(/\/([\da-zA-Z]+\.[a-z]{3,4})$/)?.[1] || `${picKey}.jpg`,
+                                  picName: matchImageFromUrl(url) || `${picKey}.jpg`,
                                   url,
                               }
                           })
@@ -226,7 +227,7 @@ const convertBlogList = async ({
                     if (type == `pic`) {
                         const url = data?.large?.url || undefined
                         retweeted_status_picShows.push({
-                            picName: url.match(/\/([\da-zA-Z]+\.[a-z]{3,4})$/)?.[1] || `${data?.pic_id}.jpg`,
+                            picName: matchImageFromUrl(url) || `${data?.pic_id}.jpg`,
                             url,
                         })
                     }
@@ -350,7 +351,19 @@ const convertBlogList = async ({
         })
     }
 
-    zipContainer.file('myblog.js', `window.myblog={"list": ${JSON.stringify(finalList)}}`)
+    // 下载用户头像
+    const userPicUrl = userInfo?.avatar_hd || userInfo?.profile_image_url || userInfo?.avatar_large || undefined
+    if (userPicUrl) {
+        userInfo.picShow = matchImageFromUrl(userPicUrl)
+        const picBlob = await fetchToGetImageBlob({ imageUrl: userPicUrl })
+        if (picBlob) {
+            imageFolder?.file(userInfo.picShow, picBlob)
+        }
+    }
+    zipContainer.file(
+        'myblog.js',
+        `window.myblog={"user": ${JSON.stringify(userInfo)},"list": ${JSON.stringify(finalList)}}`
+    )
 
     // if (!_.isEmpty(totalPicShowList)) {
     //     const imageFolder = zipContainer.folder('image')
@@ -392,4 +405,8 @@ const getFileStringFromExtension = async (): Promise<Blob> => {
             )
         })
     })
+}
+
+const matchImageFromUrl = (url: string) => {
+    return url?.match(/\/([\da-zA-Z]+\.[a-z]{3,4})(\?|$)/)?.[1] || ''
 }

@@ -29,6 +29,8 @@ const SavingWeiboPopup = () => {
         dispatch(
             updateState({
                 stopSaving: true,
+                totalCountSaveingWeibo: 0,
+                currentSavingWeiboCount: 0,
                 showWeiboPop: WeiboPopType.hidden,
             })
         )
@@ -47,6 +49,8 @@ const SavingWeiboPopup = () => {
         dispatch(
             updateState({
                 stopSaving: true,
+                totalCountSaveingWeibo: 0,
+                currentSavingWeiboCount: 0,
                 showWeiboPop: WeiboPopType.hidden,
             })
         )
@@ -183,6 +187,36 @@ const SavingWeiboPopup = () => {
         )
     }
 
+    if (showWeiboPop == WeiboPopType.completed) {
+        return (
+            <div className="flex fixed p-4 inset-0 bg-black bg-opacity-30 z-[9999]">
+                <div className="bg-white absolute right-[5rem] top-[5rem] rounded-xl h-[14rem] w-[28rem] py-4 pl-8 pr-6 flex flex-col text-gray-500 gap-2">
+                    <div className="title flex w-full text-lg font-bold flex-row gap-2 mt-2">
+                        <span className="">{`已备份完成`}</span>
+                    </div>
+                    <div className="flex ml-1 mt-1 subtitle flex-row w-full text-xs text-gray-800 text-opacity-70 gap-2">
+                        <div className="">
+                            <span>
+                                {currentSavingWeiboCount
+                                    ? `共备份${currentSavingWeiboCount}条微博`
+                                    : `备份微博总数：未知`}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="absolute bottom-6 right-6 flex mt-3 w-full item-center justify-end">
+                        <div className="flex flex-row gap-6">
+                            <button
+                                className="relative cursor-pointer rounded-lg bg-orange-500 px-3 py-1 text-gray-50 shadow-lg shadow-orange-500/50 hover:shadow-orange-600/50 hover:bg-orange-600 active:top-[0.5px] active:left-[0.5px]"
+                                onClick={handleClose}
+                            >
+                                好的
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
     if (showWeiboPop == WeiboPopType.saving) {
         return (
             <div className="flex fixed p-4 inset-0 bg-black bg-opacity-30 z-[9999]">

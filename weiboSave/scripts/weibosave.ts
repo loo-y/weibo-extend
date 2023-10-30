@@ -15,6 +15,7 @@ const imageClass = `cursor-pointer w-full h-full object-cover rounded-xl`
 const retweetPostClass = `flex reweetpost bg-gray-100 pt-5 pb-8 px-8 flex my-2 rounded-md flex-col`
 const videoContainerClass = `video flex flex-col items-center flex-wrap gap-2 mb-2`
 const videoClass = `cursor-pointer object-cover rounded-xl max-h-[38rem]  w-fit`
+const titleClass = `flex flex-col text-gray-500 text-sm italic`
 
 const start=async ()=>{
     console.log(`start`, start)
@@ -40,12 +41,20 @@ const start=async ()=>{
 start()
 
 const appendBlog = ({$container, blogItem, postClass}: Record<string, any>)=>{
-    const { text, text_raw, picShows, region_name, source, created_at, user, mediaInfoList } = blogItem || {}
+    const { text, text_raw, picShows, region_name, source, created_at, user, mediaInfoList, title } = blogItem || {}
+
     let $postInside = $('<div>').addClass(postInsideClass);
+
+    const titleText = title?.text || '';
+    if(titleText){
+        const $titleDiv = $("<div>").text(titleText).addClass(titleClass);
+        $postInside.append($titleDiv)
+    }
+
     const {idstr: user_idstr, screen_name: user_screen_name, profile_url: user_profile_url } = user || {}
     if(user_idstr && user_screen_name){
         const userInfoText =  `@${user_screen_name}`
-        let $userInfoDiv = $("<div>").addClass(`flex text-md font-bold text-gray-700 hover:text-orange-500 cursor-pointer`).append($("<span>").html(userInfoText))
+        let $userInfoDiv = $("<div>").addClass(`flex text-base font-bold text-gray-700 hover:text-orange-500 cursor-pointer`).append($("<span>").html(userInfoText))
         $userInfoDiv.click(function(){
             const jumpUrl = user_profile_url ? `https://weibo.com${user_profile_url}` : (user_idstr ? `https://weibo.com/u/${user_idstr}` : '')
             if(jumpUrl){

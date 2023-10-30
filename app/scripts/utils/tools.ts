@@ -143,7 +143,9 @@ const convertBlogList = async ({
             text_raw,
             retweeted_status,
             page_info,
+            reposts_count,
             mix_media_info,
+            title,
         } = blogItem || {}
 
         if (!_.isEmpty(page_info?.media_info)) {
@@ -260,6 +262,7 @@ const convertBlogList = async ({
                       screen_name: retweeted_status.user?.screen_name,
                   }
             retweetedBlog = {
+                reposts_count: retweeted_status.reposts_count,
                 user: retweetFromUser,
                 created_at: retweeted_status.created_at,
                 attitudes_count: retweeted_status.attitudes_count,
@@ -325,6 +328,7 @@ const convertBlogList = async ({
         }
 
         finalList.push({
+            reposts_count, // 转发数
             created_at, // 创建时间
             attitudes_count, // 点赞数
             attitudes_status,
@@ -342,6 +346,7 @@ const convertBlogList = async ({
             text_raw,
             retweetedBlog,
             mediaInfoList,
+            title: title?.text ? { text: title.text } : undefined,
         })
     }
 

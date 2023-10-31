@@ -55,7 +55,7 @@ const contentRun = async () => {
         const videoParentElement = event.currentTarget as HTMLVideoElement
         const $parent = $(videoParentElement)
         const $videoElement = $parent.find('video')
-        const videoUrl = $videoElement.attr('src')
+        let videoUrl = $videoElement.attr('src')
         if ($parent.find('.hover_download_video').length < 1) {
             const $hoverText = $(`<span>`).text(`下载视频`)
             const $hoverInfo = $('<div>').addClass('hover_download_video').append($hoverText).css({
@@ -69,6 +69,7 @@ const contentRun = async () => {
                 display: 'block',
             })
             $hoverInfo.click(async function () {
+                videoUrl = videoUrl || $videoElement.attr('src')
                 const vidoeName = matchImageOrVideoFromUrl(videoUrl) || `${new Date().getTime()}.mp4`
                 const blob = await fetchToGetVideoBlobByXHR({ videoUrl: videoUrl.replace(/\&ab=[\w\W].*?\&/, '&') })
                 let downloadUrl = videoUrl

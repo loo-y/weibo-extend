@@ -3,13 +3,14 @@ import $ from 'jquery'
 import _ from 'lodash'
 // @ts-ignore
 import Cookies from 'js-cookie'
-import { fetchToGetLikeUsers } from '../utils/fetches'
+import { fetchToGetLikeUsers, fetchToGetVideoBlobByXHR } from '../utils/fetches'
 import { weiboExtendClassNames, weiboExtendVirtualRootId } from '../utils/constants'
 import { updateBlackUserList, updateBlackLikeText } from '../reactVirtual/slice'
 import { injectVirtualRoot, injectVirtualStyle } from './injects'
 import store from '../reactVirtual/store'
 import { POST_MSG_TYPE } from '../utils/interface'
 import fansContent from './fansContent'
+import { matchImageOrVideoFromUrl } from '../utils/tools'
 
 const contentRun = async () => {
     console.log(`this is contentRun`)
@@ -48,6 +49,50 @@ const contentRun = async () => {
                 // console.log(`showUserListR`, XShowUserListR({ userList: likeUsers?.userList || [] }))
             })
         }
+    })
+
+    $(document).on('mouseover', 'div[video-active=true]', (event: $.Event) => {
+        const videoParentElement = event.currentTarget as HTMLVideoElement
+        const $parent = $(videoParentElement)
+        const $videoElement = $parent.find('video')
+        const videoUrl = $videoElement.attr('src')
+        if ($parent.find('.hover_download_video').length < 1) {
+            const $hoverText = $(`<span>`).text(`下载视频`)
+            const $hoverInfo = $('<div>').addClass('hover_download_video').append($hoverText).css({
+                position: 'absolute',
+                'z-index': 999,
+                top: '12px',
+                left: '12px',
+                cursor: 'pointer',
+                color: 'white',
+                'font-weight': 'bold',
+                display: 'block',
+            })
+            $hoverInfo.click(async function () {
+                const vidoeName = matchImageOrVideoFromUrl(videoUrl) || `${new Date().getTime()}.mp4`
+                const blob = await fetchToGetVideoBlobByXHR({ videoUrl: videoUrl.replace(/\&ab=[\w\W].*?\&/, '&') })
+                let downloadUrl = videoUrl
+                let a = document.createElement('a')
+                if (blob) {
+                    downloadUrl = URL.createObjectURL(blob)
+                    a.download = vidoeName
+                }
+                a.target = '_blank'
+                a.href = downloadUrl
+                a.style.display = 'none'
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                URL.revokeObjectURL(downloadUrl)
+            })
+            $parent.append($hoverInfo)
+        } else {
+            $parent.find('.hover_download_video').css({ display: 'block' })
+        }
+    })
+    $(document).on('mouseleave', 'div[video-active=true]', (event: $.Event) => {
+        const videoParentElement = event.currentTarget as HTMLVideoElement
+        $(videoParentElement).find('.hover_download_video').css({ display: 'none' })
     })
 }
 

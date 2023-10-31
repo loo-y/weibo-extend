@@ -70,6 +70,8 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 
 6. 备份自己/他人微博到本地 (✔️) (支持图片+视频，支持转发)
 
+7. 支持点击下载视频
+
 
 ## Todo List
 + 批量拉黑某条微博的点赞用户
@@ -147,6 +149,9 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
   <br/><img src='./docs/images/SCR-20231029-bixb.jpeg' width="600px" /><br/><br/>
 + **备份微博支持视频下载播放**
   <br/><img src='./docs/images/SCR-20231029-sgns.png' width="600px" /><br/><br/>
++ **页面内视频支持点击下载**
+  <br/><img src='./docs/images/SCR-20231101-bygk.png' width="600px" /><br/><br/>
+  
 <br />
 
 ------

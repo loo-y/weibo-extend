@@ -161,7 +161,7 @@ const convertBlogList = async ({
                           const url = picInfo?.large?.url || undefined
                           if (!url) return undefined
                           return {
-                              picName: matchImageFromUrl(url) || `${picKey}.jpg`,
+                              picName: matchImageOrVideoFromUrl(url) || `${picKey}.jpg`,
                               url,
                           }
                       })
@@ -172,7 +172,7 @@ const convertBlogList = async ({
                 if (type == `pic`) {
                     const url = data?.large?.url || undefined
                     picShows.push({
-                        picName: matchImageFromUrl(url) || `${data?.pic_id}.jpg`,
+                        picName: matchImageOrVideoFromUrl(url) || `${data?.pic_id}.jpg`,
                         url,
                     })
                 }
@@ -216,7 +216,7 @@ const convertBlogList = async ({
                               const url = picInfo?.large?.url || undefined
                               if (!url) return undefined
                               return {
-                                  picName: matchImageFromUrl(url) || `${picKey}.jpg`,
+                                  picName: matchImageOrVideoFromUrl(url) || `${picKey}.jpg`,
                                   url,
                               }
                           })
@@ -227,7 +227,7 @@ const convertBlogList = async ({
                     if (type == `pic`) {
                         const url = data?.large?.url || undefined
                         retweeted_status_picShows.push({
-                            picName: matchImageFromUrl(url) || `${data?.pic_id}.jpg`,
+                            picName: matchImageOrVideoFromUrl(url) || `${data?.pic_id}.jpg`,
                             url,
                         })
                     }
@@ -354,7 +354,7 @@ const convertBlogList = async ({
     // 下载用户头像
     const userPicUrl = userInfo?.avatar_hd || userInfo?.profile_image_url || userInfo?.avatar_large || undefined
     if (userPicUrl) {
-        userInfo.picShow = matchImageFromUrl(userPicUrl)
+        userInfo.picShow = matchImageOrVideoFromUrl(userPicUrl)
         const picBlob = await fetchToGetImageBlob({ imageUrl: userPicUrl })
         if (picBlob) {
             imageFolder?.file(userInfo.picShow, picBlob)
@@ -407,6 +407,6 @@ const getFileStringFromExtension = async (): Promise<Blob> => {
     })
 }
 
-const matchImageFromUrl = (url: string) => {
-    return url?.match(/\/([\da-zA-Z]+\.[a-z]{3,4})(\?|$)/)?.[1] || ''
+export const matchImageOrVideoFromUrl = (url: string) => {
+    return url?.match(/\/([\da-zA-Z]+\.[a-z0-9]{3,4})(\?|$)/)?.[1] || ''
 }

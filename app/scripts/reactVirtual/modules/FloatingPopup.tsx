@@ -8,6 +8,7 @@ import {
     updateState,
     updateShowFloatingPopup,
     saveWeiboQueue,
+    savingMyFav,
 } from '../slice'
 import { floatingPopupList, weiboMainHost } from '../constants'
 import { WeiboPopType } from '../interface'
@@ -46,27 +47,45 @@ const FloatingPopup: React.FC = () => {
         )
         // dispatch(saveWeiboQueue({ uid: theUid }))
     }
+    const handleSaveMyFav = () => {
+        const currentUrl = document.location.href || ``
+        const theUid = currentUrl?.match(/u\/page\/fav\/(\d+)/)?.[1] || ``
+        if (!theUid) {
+            setTimeout(() => alert(`请先进入我的收藏，再进行备份！`), 50)
+            return
+        }
+        dispatch(savingMyFav({ uid: theUid }))
+    }
+
+    const handles: Record<string, any> = {
+        handleSaveWeibo,
+        handleSaveMyFav,
+    }
     if (!showFloatingPopup) return null
 
     return (
         <div className=" max-h-80 overflow-y-scroll overflow-x-hidden w-52 bg-gray-200 shadow-md rounded-lg right-4 absolute bottom-11">
             <div className="flex px-3 py-4 flex-col gap-2 text-sm font-semibold ">
-                <div
+                {/* <div
                     className="cursor-pointer flex-item h-8 flex items-center align-middle rounded-md hover:bg-gray-300 pl-2"
                     onClick={() => {
                         handleSaveWeibo()
                     }}
                 >
                     <span className="text-center">{`备份当前用户微博`}</span>
-                </div>
+                </div> */}
                 {_.map(floatingPopupList, (floatingPopupItem, itemIndex) => {
-                    const { title } = floatingPopupItem || {}
+                    const { title, onClick } = floatingPopupItem || {}
                     return (
                         <div
                             key={`floating_popuplist_${itemIndex}`}
                             className="cursor-pointer flex-item h-8 flex items-center align-middle rounded-md hover:bg-gray-300 pl-2"
                             onClick={() => {
-                                handleClick(floatingPopupItem)
+                                if (onClick && handles[onClick]) {
+                                    handles[onClick]()
+                                } else {
+                                    handleClick(floatingPopupItem)
+                                }
                             }}
                         >
                             <span className="text-center">{title}</span>

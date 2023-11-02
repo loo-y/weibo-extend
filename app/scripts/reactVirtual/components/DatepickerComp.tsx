@@ -1,26 +1,39 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Datepicker from 'tailwind-datepicker-react'
 import { IOptions } from 'tailwind-datepicker-react/types/Options'
 import SvgCalendarIcon from './SvgCalendarIcon'
 import dayjs from 'dayjs'
 
+const LONG_DATE = `YYYY-MM-DD`
 interface IDatepickerCompProps {
     classNames?: string
     title?: string
+    defaultSelectedDate?: Date
     callback?: (info: any) => void
 }
-const DatepickerComp: React.FC<IDatepickerCompProps> = ({ title, callback, classNames }: IDatepickerCompProps) => {
+const DatepickerComp: React.FC<IDatepickerCompProps> = ({
+    title,
+    callback,
+    classNames,
+    defaultSelectedDate,
+}: IDatepickerCompProps) => {
     const [showDatepicker, setShowDatepicker] = useState(false)
     const [selectedDate, setSelectedDate] = useState<string>('')
     const datepickerRef = useRef(null)
+    useEffect(() => {
+        if (defaultSelectedDate) {
+            const dateString = dayjs(defaultSelectedDate).format(LONG_DATE)
+            setSelectedDate(dateString)
+        }
+    }, [defaultSelectedDate])
     const handleClickInput = () => {
         setShowDatepicker(true)
     }
     const handleChange = (selectedDate: Date) => {
         console.log(selectedDate)
         if (selectedDate) {
-            const dateString = dayjs(selectedDate).format('YYYY-MM-DD')
+            const dateString = dayjs(selectedDate).format(LONG_DATE)
             setSelectedDate(dateString)
             callback && callback(selectedDate)
         }
@@ -76,13 +89,14 @@ const DatepickerComp: React.FC<IDatepickerCompProps> = ({ title, callback, class
 
 export default DatepickerComp
 
+const today = new Date()
 const defaultOptions: IOptions = {
     title: '日期选择',
     autoHide: true,
     todayBtn: false,
     clearBtn: true,
     clearBtnText: '清除',
-    maxDate: new Date(),
+    // maxDate: new Date(),
     minDate: new Date('2000-01-01'),
     theme: {
         background: 'bg-gray-200 bg-opacity-95',

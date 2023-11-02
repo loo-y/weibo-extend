@@ -5,6 +5,7 @@ import DatepickerComp from '../components/DatepickerComp'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { getWeiboExtendState, updateState, saveWeiboQueue } from '../slice'
 import { WeiboPopType } from '../interface'
+import dayjs from 'dayjs'
 
 const SavingWeiboPopup = () => {
     const state = useAppSelector(getWeiboExtendState)
@@ -68,13 +69,24 @@ const SavingWeiboPopup = () => {
             if (!savingStartDate || !savingEndDate) {
                 alert(`请先选择日期`)
             } else {
-                dispatch(
-                    saveWeiboQueue({
-                        uid: savingUid,
-                        startDate: savingStartDate,
-                        endDate: savingEndDate,
-                    })
-                )
+                const today = dayjs().hour(23).minute(59).second(59).millisecond(999).valueOf()
+                const startDateTime = dayjs(savingStartDate).valueOf()
+                const endDateTime = dayjs(savingEndDate).valueOf()
+                if (startDateTime > today) {
+                    alert(`开始日期不能大于今天`)
+                } else if (endDateTime > today) {
+                    alert(`结束日期不能大于今天`)
+                } else if (endDateTime < startDateTime) {
+                    alert(`开始日期不能大于结束日期`)
+                } else {
+                    dispatch(
+                        saveWeiboQueue({
+                            uid: savingUid,
+                            startDate: savingStartDate,
+                            endDate: savingEndDate,
+                        })
+                    )
+                }
             }
         }
     }
@@ -97,9 +109,10 @@ const SavingWeiboPopup = () => {
                         <span className="">{`备份微博`}</span>
                     </div>
                     <div className="flex flex-row  text-sm gap-5 mt-2">
-                        <div className="flex items-center">
+                        <div className="flex items-center ">
                             <input
                                 type="radio"
+                                className="cursor-pointer"
                                 name="saving_type"
                                 id="saving_type_all"
                                 value="0"
@@ -108,13 +121,14 @@ const SavingWeiboPopup = () => {
                                     handleSelectSaveingType(0)
                                 }}
                             ></input>
-                            <label htmlFor="saving_type_all" className="ml-1">
+                            <label htmlFor="saving_type_all" className="ml-1 cursor-pointer">
                                 全部
                             </label>
                         </div>
                         <div className="flex items-center">
                             <input
                                 type="radio"
+                                className="cursor-pointer"
                                 name="saving_type"
                                 id="saving_type_bydate"
                                 value="1"
@@ -123,18 +137,26 @@ const SavingWeiboPopup = () => {
                                     handleSelectSaveingType(1)
                                 }}
                             ></input>
-                            <label htmlFor="saving_type_bydate" className="ml-1">
+                            <label htmlFor="saving_type_bydate" className="ml- cursor-pointer">
                                 按日期
                             </label>
                         </div>
                     </div>
                     {savingType == 1 ? (
                         <div className="flex flex-row text-sm gap-5 mt-2 items-center">
-                            <DatepickerComp title={`开始日期`} callback={handleGetSavingStartDate} />
+                            <DatepickerComp
+                                title={`开始日期`}
+                                callback={handleGetSavingStartDate}
+                                defaultSelectedDate={savingStartDate}
+                            />
                             <div className="flex">
                                 <span>至</span>
                             </div>
-                            <DatepickerComp title={`截止日期`} callback={handleGetSavingEndDate} />
+                            <DatepickerComp
+                                title={`截止日期`}
+                                callback={handleGetSavingEndDate}
+                                defaultSelectedDate={savingEndDate}
+                            />
                         </div>
                     ) : null}
                     <div className="absolute bottom-6 right-6 flex mt-3 w-full item-center justify-end">
@@ -217,7 +239,7 @@ const SavingWeiboPopup = () => {
             </div>
         )
     }
-    if (showWeiboPop == WeiboPopType.saving) {
+    if (showWeiboPop == WeiboPopType.saving || showWeiboPop == WeiboPopType.savingFav) {
         return (
             <div className="flex fixed p-4 inset-0 bg-black bg-opacity-30 z-[9999]">
                 <div className="bg-white absolute right-[5rem] top-[5rem] rounded-xl h-[14rem] w-[28rem] py-4 pl-8 pr-6 flex flex-col text-gray-500 gap-2">

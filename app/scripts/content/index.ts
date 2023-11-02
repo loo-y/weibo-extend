@@ -62,7 +62,7 @@ const contentRun = async () => {
                 position: 'absolute',
                 'z-index': 999,
                 top: '12px',
-                left: '12px',
+                right: '12px',
                 cursor: 'pointer',
                 color: 'white',
                 'font-weight': 'bold',

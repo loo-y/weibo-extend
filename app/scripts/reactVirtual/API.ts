@@ -219,3 +219,29 @@ export const fetchToSearchProfile = async (props: {
 
     return { data, status }
 }
+
+export const fetchToGetMyFav = async (props: { uid: string; pageIndex?: number }) => {
+    let data = null,
+        status = false
+    const { uid, pageIndex = 1 } = props || {}
+
+    if (!uid) return { data, status }
+
+    try {
+        const response = await baseFetch({
+            url: `//weibo.com/ajax/favorites/all_fav?uid=${uid}&page=${pageIndex}&with_total=true`,
+            method: 'GET',
+        })
+        const respJson = await response.json()
+        const realData = respJson?.data || {}
+        const { status: statusList, total_number } = realData || {}
+        // 防止过快导致接口请求被封
+        await sleep(0.3)
+        data = { ...(realData || {}), list: statusList, uid, hasMore: statusList?.length > 3, total: total_number }
+        status = true
+    } catch (e) {
+        console.log(`fetchToGetFriends`, e)
+    }
+
+    return { data, status }
+}

@@ -63,17 +63,18 @@ export const isType = <T>(value: unknown, targetType: new (...args: any[]) => T)
 interface ISaveBlogToZipProps {
     myBlog: Record<string, any>[]
     start?: number
+    isMyFav?: boolean
     attachedName?: string
     eachCallback?: (info: any) => void
 }
-export const saveBlogToZip = async ({ myBlog, start, attachedName, eachCallback }: ISaveBlogToZipProps) => {
+export const saveBlogToZip = async ({ myBlog, start, isMyFav, attachedName, eachCallback }: ISaveBlogToZipProps) => {
     const zip = new JSZip()
     start = (start || 0) + 1
     let end = start - 1 + (myBlog?.length || 0)
     const range = `${start}_${end}`
     const userInfo = myBlog?.[0]?.user || {}
     const { screen_name, idstr } = userInfo || {}
-    const zipFileName = _.compact([idstr, screen_name, attachedName, range]).join('_')
+    const zipFileName = _.compact(isMyFav ? [attachedName, range] : [idstr, screen_name, attachedName, range]).join('_')
 
     const extensionId = chrome.runtime.id
     const weibSaveFolder = `chrome-extension://${extensionId}/weiboSave`

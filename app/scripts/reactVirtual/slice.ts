@@ -9,6 +9,7 @@ import {
     fetchToGetMyFriends,
     fetchToGetBlog,
     fetchToSearchProfile,
+    fetchToGetMyFav,
 } from './API'
 import { WeiboExtendState, WeiboPopType } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
@@ -258,26 +259,36 @@ interface ISaveweiboQueueProps {
     start?: number
     startDate?: Date
     endDate?: Date
+    isMyFav?: boolean
 }
 export const saveWeiboQueue = createAsyncThunk(
     'weiboExtendSlice/saveWeiboQueue',
     async (
-        { uid = '', pageIndex: paramsPageIndex = 1, start: paramsStart, startDate, endDate }: ISaveweiboQueueProps,
+        {
+            uid = '',
+            pageIndex: paramsPageIndex = 1,
+            start: paramsStart,
+            startDate,
+            endDate,
+            isMyFav,
+        }: ISaveweiboQueueProps,
         { dispatch, getState }: any
     ) => {
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        let pageIndex = paramsPageIndex || 1
+        const otherUid = uid || ''
+        const start = paramsStart || 0
+
         dispatch(updateStopBlockOthers(false))
         dispatch(
             updateState({
                 stopSaving: false,
                 showWeiboPop: WeiboPopType.saving,
                 currentSavingWeiboCount: 0,
-                totalCountSaveingWeibo: 0,
+                totalCountSaveingWeibo: pageIndex < 2 ? 0 : weiboExtendState.totalCountSaveingWeibo || 0,
             })
         )
-        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
-        const otherUid = uid || ''
-        let pageIndex = paramsPageIndex || 1
-        const start = paramsStart || 0
+
         if (!otherUid) return
 
         const startTimeShortSpan = (startDate && dayjs(startDate).unix()) || undefined
@@ -289,10 +300,11 @@ export const saveWeiboQueue = createAsyncThunk(
         let onePageList: Record<string, any>[] = []
         let totalCountSaveingWeibo = 0
         for (let count = 0; count < onePageCount; ) {
-            const blogsResp =
-                startTimeShortSpan && endTimeShortSpan
-                    ? await fetchToSearchProfile({ uid: otherUid, pageIndex, startTimeShortSpan, endTimeShortSpan })
-                    : await fetchToGetBlog({ uid: otherUid, pageIndex })
+            const blogsResp = isMyFav
+                ? await fetchToGetMyFav({ uid: otherUid, pageIndex })
+                : startTimeShortSpan && endTimeShortSpan
+                ? await fetchToSearchProfile({ uid: otherUid, pageIndex, startTimeShortSpan, endTimeShortSpan })
+                : await fetchToGetBlog({ uid: otherUid, pageIndex })
             pageIndex++
             const { list, hasMore, total } = blogsResp?.data || {}
             totalCountSaveingWeibo = total || totalCountSaveingWeibo
@@ -316,13 +328,15 @@ export const saveWeiboQueue = createAsyncThunk(
             return null
         }
 
-        const attachedName =
-            startDate && endDate
-                ? dayjs(startDate).format('YYYYMMDD') + '_' + dayjs(endDate).format('YYYYMMDD')
-                : `total`
+        const attachedName = isMyFav
+            ? `${uid}_Favorites`
+            : startDate && endDate
+            ? dayjs(startDate).format('YYYYMMDD') + '_' + dayjs(endDate).format('YYYYMMDD')
+            : `total`
         await saveBlogToZip({
             myBlog: onePageList,
             start,
+            isMyFav,
             attachedName,
             eachCallback: ({ weiboCount, weiboPicCount, weiboVideoCount }) => {
                 const { stopSaving } = getWeiboExtendState(getState())
@@ -352,8 +366,31 @@ export const saveWeiboQueue = createAsyncThunk(
             return null
         }
         dispatch(
-            saveWeiboQueue({ uid: otherUid, pageIndex, startDate, endDate, start: start + (onePageList?.length || 0) })
+            saveWeiboQueue({
+                uid: otherUid,
+                pageIndex,
+                startDate,
+                endDate,
+                start: start + (onePageList?.length || 0),
+                isMyFav,
+            })
         )
+    }
+)
+
+export const savingMyFav = createAsyncThunk(
+    'weiboExtendSlice/savingMyFav',
+    async ({ uid }: Pick<ISaveweiboQueueProps, 'uid'>, { dispatch, getState }: any) => {
+        dispatch(updateStopBlockOthers(false))
+        const weiboExtendState: WeiboExtendState = getWeiboExtendState(getState())
+        dispatch(
+            updateState({
+                showFloatingPopup: false,
+                stopSaving: false,
+                showWeiboPop: WeiboPopType.savingFav,
+            })
+        )
+        dispatch(saveWeiboQueue({ uid: uid, isMyFav: true }))
     }
 )
 

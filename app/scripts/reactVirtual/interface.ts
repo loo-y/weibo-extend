@@ -16,6 +16,7 @@ export enum WeiboPopType {
     hidden = `hidden`,
     typeSelect = `typeSelect`,
     saving = `saving`,
+    savingFav = `savingFav`,
     stop = `stop`,
     completed = `completed`,
 }

@@ -185,3 +185,22 @@ export const fetchToGetVideoBlobByXHR = async ({ videoUrl }: { videoUrl: string 
     }
     return null
 }
+
+export const fetchToGetLongText = async ({ mblogId }: { mblogId?: string }) => {
+    if (!mblogId) return null
+    try {
+        const response = await baseFetch({
+            url: `//weibo.com/ajax/statuses/longtext?id=${mblogId}`,
+            method: 'GET',
+        })
+
+        const result = await response.json()
+        const { longTextContent } = result?.data || {}
+        // 防止请求过于密集
+        await sleep(3 * Math.random())
+        return longTextContent || null
+    } catch (e) {
+        console.log(`fetchToGetImageBlob`, e)
+    }
+    return null
+}

@@ -1,7 +1,7 @@
 import JSZip from 'jszip'
 const FileSaver = require('file-saver')
 import _ from 'lodash'
-import { fetchToGetImageBlob, fetchToGetVideoBlobByXHR } from './fetches'
+import { fetchToGetImageBlob, fetchToGetVideoBlobByXHR, fetchToGetLongText } from './fetches'
 
 // watch Element by MutationObserver
 export const watchElement = ({
@@ -151,6 +151,8 @@ const convertBlogList = async ({
             mix_media_info,
             title,
             user,
+            mblogid,
+            isLongText,
         } = blogItem || {}
 
         if (!_.isEmpty(page_info?.media_info)) {
@@ -266,6 +268,11 @@ const convertBlogList = async ({
                       profile_image_url: retweeted_status.user?.profile_image_url,
                       screen_name: retweeted_status.user?.screen_name,
                   }
+
+            let retweetedTextRaw = retweeted_status.text_raw
+            if (retweeted_status.isLongText && retweeted_status.mblogid) {
+                retweetedTextRaw = (await fetchToGetLongText({ mblogId: retweeted_status.mblogid })) || retweetedTextRaw
+            }
             retweetedBlog = {
                 reposts_count: retweeted_status.reposts_count,
                 user: retweetFromUser,
@@ -283,7 +290,7 @@ const convertBlogList = async ({
                 region_name: retweeted_status.region_name, // 发布于XX
                 source: retweeted_status.source, // 客户端
                 text: retweeted_status.text,
-                text_raw: retweeted_status.text_raw,
+                text_raw: retweetedTextRaw,
             }
         }
 
@@ -332,6 +339,11 @@ const convertBlogList = async ({
             }
         }
 
+        let textRaw = text_raw
+        if (isLongText && mblogid) {
+            textRaw = (await fetchToGetLongText({ mblogId: mblogid })) || textRaw
+        }
+
         finalList.push({
             reposts_count, // 转发数
             created_at, // 创建时间
@@ -348,7 +360,7 @@ const convertBlogList = async ({
             region_name, // 发布于XX
             source, // 客户端
             text,
-            text_raw,
+            text_raw: textRaw,
             retweetedBlog,
             mediaInfoList,
             title: title?.text ? { text: title.text } : undefined,

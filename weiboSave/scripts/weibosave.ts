@@ -110,7 +110,7 @@ const appendBlog = ({$container, blogItem, postClass}: Record<string, any>)=>{
     $postInside.append($smallInfoDiv)
 
     // 文字
-    let $text = $('<p>').text(text_raw || text);
+    let $text = $('<p>').html(text_raw.replace(/\n/g, "<br />") || text);
     $text.addClass(textClass)
     $postInside.append($text);
 

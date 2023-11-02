@@ -92,11 +92,12 @@ export const saveBlogToZip = async ({ myBlog, start, isMyFav, attachedName, each
     ])
     const container = zip.folder(zipFileName) as JSZip
     container.file('index.html', indexHtmlText)
-    const scriptsFolder = container.folder('scripts')
+    const assetsFolder = container.folder('assets')
+    const scriptsFolder = assetsFolder?.folder('scripts')
     scriptsFolder?.file(weibosaveJsName, weibosaveJsText)
-    const styleFolder = container.folder('style')
+    const styleFolder = assetsFolder?.folder('style')
     styleFolder?.file(weibosaveCssName, weibosaveCssText)
-    await convertBlogList({ myBlog: myBlog, zipContainer: container, eachCallback })
+    await convertBlogList({ isMyFav, myBlog: myBlog, zipContainer: assetsFolder, eachCallback })
 
     zip.generateAsync({ type: 'blob' }).then(function (content) {
         // see FileSaver.js
@@ -113,10 +114,11 @@ const fetchFileStringFromExtension = async (fileUrl: string): Promise<any> => {
 const convertBlogList = async ({
     myBlog,
     zipContainer,
+    isMyFav,
     eachCallback,
-}: ISaveBlogToZipProps & { zipContainer: JSZip; eachCallback?: (info: any) => void }): Promise<void> => {
-    const imageFolder = zipContainer.folder('image')
-    const videoFolder = zipContainer.folder('video')
+}: ISaveBlogToZipProps & { zipContainer: JSZip | null; eachCallback?: (info: any) => void }): Promise<void> => {
+    const imageFolder = zipContainer?.folder('image')
+    const videoFolder = zipContainer?.folder('video')
     const userInfo = myBlog?.[0]?.user || {}
     let totalPicShowList: { picName: string; url: string }[] = []
     let finalList: typeof myBlog = []
@@ -148,6 +150,7 @@ const convertBlogList = async ({
             reposts_count,
             mix_media_info,
             title,
+            user,
         } = blogItem || {}
 
         if (!_.isEmpty(page_info?.media_info)) {
@@ -349,6 +352,15 @@ const convertBlogList = async ({
             retweetedBlog,
             mediaInfoList,
             title: title?.text ? { text: title.text } : undefined,
+            user: {
+                avatar_hd: user?.avatar_hd,
+                avatar_large: user?.avatar_large,
+                idstr: user?.idstr,
+                id: user?.idstr,
+                profile_image_url: user?.profile_image_url,
+                profile_url: user?.profile_url,
+                screen_name: user?.screen_name,
+            },
         })
     }
 
@@ -361,13 +373,16 @@ const convertBlogList = async ({
             imageFolder?.file(userInfo.picShow, picBlob)
         }
     }
-    zipContainer.file(
-        'myblog.js',
-        `window.myblog={"user": ${JSON.stringify(userInfo)},"list": ${JSON.stringify(finalList)}}`
-    )
+    const myBlogJson: Record<string, any> = {
+        list: finalList,
+    }
+    if (userInfo && !isMyFav) {
+        myBlogJson.user = userInfo
+    }
+    zipContainer?.file('myblog.js', `window.myblog=${JSON.stringify(myBlogJson)}`)
 
     // if (!_.isEmpty(totalPicShowList)) {
-    //     const imageFolder = zipContainer.folder('image')
+    //     const imageFolder = zipContainer?.folder('image')
     //     // 不能使用Promise.all 会被封调用
     //     for (let picShow of totalPicShowList) {
     //         const picBlob = await fetchToGetImageBlob({ imageUrl: picShow?.url })

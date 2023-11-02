@@ -26,6 +26,8 @@ const userProfileContainerClass = `flex flex-col text-black`
 
 const weiboBaseUrl = `https://weibo.com`
 
+const assetsPath = "./assets"
+
 const start=async ()=>{
     console.log(`start`, start)
     console.log(myblog)
@@ -58,7 +60,7 @@ const appendUserInfo = ({$container, userInfo}: Record<string, any>)=>{
     const { picShow, screen_name, profile_url, idstr } = userInfo || {}
     const $userInfoContainer = $("<div>").addClass(userInfoContainerClass);
     const $userImageContainerDiv = $("<div>").addClass(userImageContainerClass)
-    const $userImage = $("<img>").addClass(userImageClass).attr("src", `./image/${picShow}`)
+    const $userImage = $("<img>").addClass(userImageClass).attr("src", `${assetsPath}/image/${picShow}`)
     $userImageContainerDiv.append($userImage)
 
     const $userProfileContainer = $("<div>").addClass(userProfileContainerClass);
@@ -116,7 +118,7 @@ const appendBlog = ({$container, blogItem, postClass}: Record<string, any>)=>{
     if(!_.isEmpty(picShows)){
         let $imageContainer = $('<div>').addClass(imageContainerClass);
         _.map(picShows, picItem=>{
-            const srcUrl = `./image/${picItem.picName}`
+            const srcUrl = `${assetsPath}/image/${picItem.picName}`
             let $image = $('<img>').attr('src', srcUrl);
             $image.addClass(imageClass);
             $image.click(function() {
@@ -142,7 +144,7 @@ const appendBlog = ({$container, blogItem, postClass}: Record<string, any>)=>{
         let $videoContainer = $('<div>').addClass(videoContainerClass);
         _.map(mediaInfoList, mediaItem=>{
             const { format, media_id} = mediaItem
-            const srcUrl = `./video/${media_id}.${format}`
+            const srcUrl = `${assetsPath}/video/${media_id}.${format}`
             let $video = $('<video>').attr('src', srcUrl);
             $video.attr("controls", true)
             $video.addClass(videoClass);

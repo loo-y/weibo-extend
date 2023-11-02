@@ -137,7 +137,7 @@ const SavingWeiboPopup = () => {
                                     handleSelectSaveingType(1)
                                 }}
                             ></input>
-                            <label htmlFor="saving_type_bydate" className="ml- cursor-pointer">
+                            <label htmlFor="saving_type_bydate" className="ml-1 cursor-pointer">
                                 按日期
                             </label>
                         </div>

@@ -70,7 +70,9 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 
 6. 备份自己/他人微博到本地 (✔️) (支持图片+视频，支持转发)
 
-7. 支持点击下载视频
+7. 支持点击下载视频 (✔️)
+
+8. 支持备份收藏的微博 (✔️)
 
 
 ## Todo List
@@ -83,6 +85,11 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 <br />
 
 ### 版本迭代说明
+
+1.5
+> 新增浏览微博视频时下载视频；<br>
+> 新增支持备份收藏的微博列表；<br>
+> 修复长微博的保存。<br>
 
 1.4
 > 新增备份功能，支持按时间范围备份。<br>

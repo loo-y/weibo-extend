@@ -7,3 +7,13 @@ img{
     display: inline;
     max-width: none;
 }
+
+*, :after, :before{
+    box-sizing: content-box;
+}
+
+#weibo-extend-virtual-root *,
+#weibo-extend-virtual-root *::before,
+#weibo-extend-virtual-root *::after {
+    box-sizing: border-box;
+}

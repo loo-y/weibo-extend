@@ -28,6 +28,7 @@ export const weiboExtendClassNames = {
     root: `${baseClassName}-virtual-root`,
     blockLikeUsers: `${baseClassName}-block-like-users`,
     commentId: `${baseClassName}-commentid`,
+    downloadPost: `${baseClassName}-download-post`,
 }
 
 // 限制最多获取多少页，防止请求过多被封

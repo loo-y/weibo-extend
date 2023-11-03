@@ -157,7 +157,7 @@ export const fetchToGetOthersFriends = async (props: IGetFriendsProps) => {
         data = { ...(data || {}), uid, hasMore: data?.next_page > 0 }
         status = true
     } catch (e) {
-        console.log(`fetchToGetFriends`, e)
+        console.log(`fetchToGetOthersFriends`, e)
     }
 
     return { data, status }
@@ -184,7 +184,7 @@ export const fetchToGetBlog = async (props: { uid: string; since_id?: string; pa
         data = { ...(realData || {}), uid, hasMore: !!realData?.since_id }
         status = true
     } catch (e) {
-        console.log(`fetchToGetFriends`, e)
+        console.log(`fetchToGetBlog`, e)
     }
 
     return { data, status }
@@ -214,7 +214,7 @@ export const fetchToSearchProfile = async (props: {
         data = { ...(realData || {}), uid, hasMore: realData?.list?.length > 5 }
         status = true
     } catch (e) {
-        console.log(`fetchToGetFriends`, e)
+        console.log(`fetchToSearchProfile`, e)
     }
 
     return { data, status }
@@ -240,7 +240,49 @@ export const fetchToGetMyFav = async (props: { uid: string; pageIndex?: number }
         data = { ...(realData || {}), list: statusList, uid, hasMore: statusList?.length > 3, total: total_number }
         status = true
     } catch (e) {
-        console.log(`fetchToGetFriends`, e)
+        console.log(`fetchToGetMyFav`, e)
+    }
+
+    return { data, status }
+}
+
+// https://weibo.com/ajax/statuses/buildComments?flow=0&is_reload=1&id=4929923510961500&is_show_bulletin=2&is_mix=0&max_id=141480832392519&count=20&uid=7307533642&fetch_level=0&locale=en
+export const fetchToGetComments = async (props: {
+    uid: string
+    pageIndex?: number
+    postId: number
+    max_id?: number
+    flow?: number
+}) => {
+    let data = null,
+        status = false
+    const {
+        uid,
+        pageIndex = 1,
+        postId,
+        max_id,
+        flow = 0, // 0：按热度 1: 按顺序
+    } = props || {}
+    if (!uid || !postId) return { data, status }
+
+    let url = `//weibo.com/ajax/statuses/buildComments?flow=${flow}&is_reload=1&id=${postId}&is_show_bulletin=2&is_mix=0&max_id=${
+        max_id || ''
+    }&count=20&uid=${uid}&fetch_level=0`
+
+    try {
+        const response = await baseFetch({
+            url,
+            method: 'GET',
+        })
+        const respJson = await response.json()
+        const { total_number, max_id, data: commentList } = respJson || {}
+
+        // 防止过快导致接口请求被封
+        await sleep(0.3)
+        data = { list: commentList, uid, max_id, hasMore: commentList?.length > 1, total: total_number }
+        status = true
+    } catch (e) {
+        console.log(`fetchToGetComments`, e)
     }
 
     return { data, status }

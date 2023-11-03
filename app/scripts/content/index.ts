@@ -17,7 +17,7 @@ const contentRun = async () => {
 
     fansContent()
 
-    const { base: WEC_base, blockLikeUsers: WEC_blockLikeUsers } = weiboExtendClassNames
+    const { base: WEC_base, blockLikeUsers: WEC_blockLikeUsers, downloadPost: WEC_downloadPost } = weiboExtendClassNames
     $(document).on('mouseover', '.wbpro-list', (event: $.Event) => {
         const targetElement = event.currentTarget as HTMLElement
         // console.log(`$(targetElement)`, targetElement)
@@ -95,6 +95,31 @@ const contentRun = async () => {
         const videoParentElement = event.currentTarget as HTMLVideoElement
         $(videoParentElement).find('.hover_download_video').css({ display: 'none' })
     })
+
+    $(document).on('DOMNodeInserted', 'div.wbpro-scroller-item', function () {
+        // @ts-ignore
+        const $current = $(this)
+        if ($current.find(`.${WEC_downloadPost}`).length < 1) {
+            const $currentHeader = $current.find('header')
+            console.log(`currentHeader`, $currentHeader)
+            const $timeHref = findAnchor($currentHeader, new RegExp(/weibo\.com\/\d+(\S)+/g))
+            if ($timeHref) {
+                console.log(`href`, $timeHref.attr('href'))
+                const $parent = $timeHref.parent()
+                console.log(`$parent`, $parent.attr('class'))
+                const $downloadPostBtn = $('<div>')
+                    .addClass(`${WEC_downloadPost}`)
+                    .css({
+                        position: 'absolute',
+                        right: '20px',
+                        cursor: 'pointer',
+                    })
+                    .append('<span>')
+                    .text('下载此微博及评论')
+                $parent.append($downloadPostBtn)
+            }
+        }
+    })
 }
 
 // 监听页面的加载完成事件, 注入自定义脚本到页面中
@@ -134,4 +159,13 @@ const getMyUid = () => {
     })
     console.log(`myUid`, myUid)
     return myUid
+}
+
+var findAnchor = function ($container: any, reg: RegExp) {
+    const $theAnchor = $container.find('a').filter(function () {
+        // @ts-ignore
+        return this.href.match(reg)
+    })
+
+    return $theAnchor?.length ? $theAnchor : null
 }

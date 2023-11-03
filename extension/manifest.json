@@ -23,7 +23,7 @@
     },
     "web_accessible_resources": [
         {
-            "resources": ["inject-script.js", "icons/icon38.png", "virtualPage.output.css", "weiboSave/*", "favicon.ico"],
+            "resources": ["inject-script.js", "icons/icon38.png", "virtualPage.output.css", "weiboSave/*"],
             "matches": ["https://weibo.com/*", "https://*.weibo.com/*"]
         }
     ],

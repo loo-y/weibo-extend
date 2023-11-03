@@ -2,6 +2,7 @@ import JSZip from 'jszip'
 const FileSaver = require('file-saver')
 import _ from 'lodash'
 import { fetchToGetImageBlob, fetchToGetVideoBlobByXHR, fetchToGetLongText } from './fetches'
+import { favIcon32 } from './constants'
 
 // watch Element by MutationObserver
 export const watchElement = ({
@@ -93,6 +94,7 @@ export const saveBlogToZip = async ({ myBlog, start, isMyFav, attachedName, each
     const container = zip.folder(zipFileName) as JSZip
     container.file('index.html', indexHtmlText)
     const assetsFolder = container.folder('assets')
+    assetsFolder?.file('favicon.ico', favIcon32, { base64: true })
     const scriptsFolder = assetsFolder?.folder('scripts')
     scriptsFolder?.file(weibosaveJsName, weibosaveJsText)
     const styleFolder = assetsFolder?.folder('style')

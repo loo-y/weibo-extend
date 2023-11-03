@@ -58,6 +58,10 @@ start()
 const appendUserInfo = ({$container, userInfo}: Record<string, any>)=>{
     if(_.isEmpty(userInfo)) return;
     const { picShow, screen_name, profile_url, idstr } = userInfo || {}
+    if(screen_name){
+        document.title = screen_name;
+    }
+    
     const $userInfoContainer = $("<div>").addClass(userInfoContainerClass);
     const $userImageContainerDiv = $("<div>").addClass(userImageContainerClass)
     const $userImage = $("<img>").addClass(userImageClass).attr("src", `${assetsPath}/image/${picShow}`)

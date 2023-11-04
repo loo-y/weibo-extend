@@ -74,17 +74,21 @@ Chrome Extension👉 [微博扩展](https://chrome.google.com/webstore/detail/np
 
 8. 支持备份收藏的微博 (✔️)
 
+9. 支持展示 vplus 会员专属图片
+
 
 ## Todo List
 + 批量拉黑某条微博的点赞用户
 
 + 下载并展示 live 图
 
-+ 下载会员图片
 
 <br />
 
 ### 版本迭代说明
+1.6
+> 修复部分图片无法获取的问题，使用固定 cdn 图片地址补偿<br>
+> 支持展示博主 vplus 会员专属图片
 
 1.5
 > 新增浏览微博视频时下载视频；<br>

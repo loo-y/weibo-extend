@@ -167,10 +167,12 @@ const convertBlogList = async ({
                 : _.compact(
                       _.map(pic_infos, (picInfo, picKey) => {
                           const url = picInfo?.large?.url || undefined
+                          const largest = picInfo?.largest?.url || undefined
                           if (!url) return undefined
                           return {
                               picName: matchImageOrVideoFromUrl(url) || `${picKey}.jpg`,
                               url,
+                              largest,
                           }
                       })
                   )
@@ -179,9 +181,11 @@ const convertBlogList = async ({
                 const { type, data } = item || {}
                 if (type == `pic`) {
                     const url = data?.large?.url || undefined
+                    const largest = data?.largest?.url || undefined
                     picShows.push({
                         picName: matchImageOrVideoFromUrl(url) || `${data?.pic_id}.jpg`,
                         url,
+                        largest,
                     })
                 }
                 if (type == `video`) {
@@ -208,7 +212,8 @@ const convertBlogList = async ({
                     weiboCount: _count,
                     weiboPicCount: _count_pic_count,
                 })
-            const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: picShow?.url })
+            // const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: picShow?.url })
+            const picBlob = await getImageRetry({ imageUrl: picShow?.url, picName: picShow.picName })
             if (picBlob) {
                 imageFolder?.file(picShow.picName, picBlob)
             }
@@ -222,10 +227,12 @@ const convertBlogList = async ({
                     : _.compact(
                           _.map(retweeted_status.pic_infos, (picInfo, picKey) => {
                               const url = picInfo?.large?.url || undefined
+                              const largest = picInfo?.largest?.url || undefined
                               if (!url) return undefined
                               return {
                                   picName: matchImageOrVideoFromUrl(url) || `${picKey}.jpg`,
                                   url,
+                                  largest,
                               }
                           })
                       )
@@ -234,9 +241,11 @@ const convertBlogList = async ({
                     const { type, data } = item || {}
                     if (type == `pic`) {
                         const url = data?.large?.url || undefined
+                        const largest = data?.largest?.url || undefined
                         retweeted_status_picShows.push({
                             picName: matchImageOrVideoFromUrl(url) || `${data?.pic_id}.jpg`,
                             url,
+                            largest,
                         })
                     }
                     if (type == `video`) {
@@ -256,7 +265,8 @@ const convertBlogList = async ({
                         weiboCount: _count,
                         weiboPicCount: _count_pic_count,
                     })
-                const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: retweetPicShow?.url })
+                // const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: retweetPicShow?.url })
+                const picBlob = await getImageRetry({ imageUrl: retweetPicShow?.url, picName: retweetPicShow.picName })
                 if (picBlob) {
                     imageFolder?.file(retweetPicShow.picName, picBlob)
                 }
@@ -439,4 +449,23 @@ const getFileStringFromExtension = async (): Promise<Blob> => {
 
 export const matchImageOrVideoFromUrl = (url: string) => {
     return url?.match(/\/([\da-zA-Z]+\.[a-z0-9]{3,4})(\?|$)/)?.[1] || ''
+}
+
+// 新增补偿下载
+const getImageRetry = async ({ imageUrl, picName }: { imageUrl: string; picName?: string }) => {
+    const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: imageUrl })
+    if (picBlob) {
+        return picBlob
+    }
+
+    if (picName) {
+        const randomImageCDN = Math.floor(Math.random() * 3) + 1
+        const retryUrl = `https://wx${randomImageCDN}.sinaimg.cn/large/${picName}`
+        const retryPicBlob = await fetchToGetImageBlobByXHR({ imageUrl: retryUrl })
+        if (retryPicBlob) {
+            return retryPicBlob
+        }
+    }
+
+    return null
 }

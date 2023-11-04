@@ -140,6 +140,29 @@ export const fetchToGetImageBlob = async ({ imageUrl }: { imageUrl: string }): P
     return null
 }
 
+export const fetchToGetImageBlobByXHR = async ({ imageUrl }: { imageUrl: string }): Promise<null | Blob> => {
+    if (!imageUrl) return null
+    try {
+        const responseBlob = await new Promise<Blob | null>((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.open('get', imageUrl)
+            xhr.responseType = 'blob'
+            xhr.onload = () => {
+                resolve(xhr.response as Blob)
+            }
+            xhr.send()
+            xhr.onerror = () => {
+                resolve(null)
+            }
+        })
+        await sleep(3 * Math.random())
+        return responseBlob
+    } catch (e) {
+        console.log(`fetchToGetImageBlobByXHR`, e)
+    }
+    return null
+}
+
 export const fetchToGetVideoBlob = async ({ videoUrl }: { videoUrl: string }): Promise<null | Blob> => {
     if (!videoUrl) return null
     try {
@@ -159,7 +182,7 @@ export const fetchToGetVideoBlob = async ({ videoUrl }: { videoUrl: string }): P
         await sleep(3 * Math.random())
         return respBlob
     } catch (e) {
-        console.log(`fetchToGetImageBlob`, e)
+        console.log(`fetchToGetVideoBlob`, e)
     }
     return null
 }
@@ -181,7 +204,7 @@ export const fetchToGetVideoBlobByXHR = async ({ videoUrl }: { videoUrl: string 
         })
         return responseBlob
     } catch (e) {
-        console.log(`fetchToGetImageBlob`, e)
+        console.log(`fetchToGetVideoBlobByXHR`, e)
     }
     return null
 }
@@ -200,7 +223,7 @@ export const fetchToGetLongText = async ({ mblogId }: { mblogId?: string }) => {
         await sleep(3 * Math.random())
         return longTextContent || null
     } catch (e) {
-        console.log(`fetchToGetImageBlob`, e)
+        console.log(`fetchToGetLongText`, e)
     }
     return null
 }

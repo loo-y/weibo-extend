@@ -1,7 +1,7 @@
 import JSZip from 'jszip'
 const FileSaver = require('file-saver')
 import _ from 'lodash'
-import { fetchToGetImageBlob, fetchToGetVideoBlobByXHR, fetchToGetLongText } from './fetches'
+import { fetchToGetImageBlob, fetchToGetImageBlobByXHR, fetchToGetVideoBlobByXHR, fetchToGetLongText } from './fetches'
 import { favIcon32 } from './constants'
 
 // watch Element by MutationObserver
@@ -208,7 +208,7 @@ const convertBlogList = async ({
                     weiboCount: _count,
                     weiboPicCount: _count_pic_count,
                 })
-            const picBlob = await fetchToGetImageBlob({ imageUrl: picShow?.url })
+            const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: picShow?.url })
             if (picBlob) {
                 imageFolder?.file(picShow.picName, picBlob)
             }
@@ -256,7 +256,7 @@ const convertBlogList = async ({
                         weiboCount: _count,
                         weiboPicCount: _count_pic_count,
                     })
-                const picBlob = await fetchToGetImageBlob({ imageUrl: retweetPicShow?.url })
+                const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: retweetPicShow?.url })
                 if (picBlob) {
                     imageFolder?.file(retweetPicShow.picName, picBlob)
                 }
@@ -382,7 +382,7 @@ const convertBlogList = async ({
     const userPicUrl = userInfo?.avatar_hd || userInfo?.profile_image_url || userInfo?.avatar_large || undefined
     if (userPicUrl) {
         userInfo.picShow = matchImageOrVideoFromUrl(userPicUrl)
-        const picBlob = await fetchToGetImageBlob({ imageUrl: userPicUrl })
+        const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: userPicUrl })
         if (picBlob) {
             imageFolder?.file(userInfo.picShow, picBlob)
         }

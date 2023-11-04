@@ -31,8 +31,9 @@ const FloatingPopup: React.FC = () => {
     }
 
     const handleSaveWeibo = () => {
-        const currentUrl = document.location.href || ``
-        const theUid = currentUrl?.match(/u\/(\d+)/)?.[1] || ``
+        const currentUrl = new URL(document.location.href)
+        const urlPath = currentUrl.pathname || window.location.pathname
+        const theUid = urlPath?.match(/u\/(\d+)/)?.[1] || urlPath?.match(/^\/(\d+)/)?.[1] || ``
         dispatch(updateShowFloatingPopup(false))
         if (!theUid) {
             setTimeout(() => alert(`请先访问个人主页，再进行备份！`), 50)

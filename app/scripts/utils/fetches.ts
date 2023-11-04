@@ -163,6 +163,29 @@ export const fetchToGetImageBlobByXHR = async ({ imageUrl }: { imageUrl: string 
     return null
 }
 
+export const fetchToGetImageBlobByCloudflare = async ({ imageUrl }: { imageUrl: string }): Promise<null | Blob> => {
+    if (!imageUrl) return null
+    try {
+        const responseBlob = await new Promise<Blob | null>((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.open('get', `https://weibo-image-fetch.127321.xyz//?url=${encodeURIComponent(imageUrl)}`)
+            xhr.responseType = 'blob'
+            xhr.onload = () => {
+                resolve(xhr.response as Blob)
+            }
+            xhr.send()
+            xhr.onerror = () => {
+                resolve(null)
+            }
+        })
+        await sleep(3 * Math.random())
+        return responseBlob
+    } catch (e) {
+        console.log(`fetchToGetImageBlobByXHR`, e)
+    }
+    return null
+}
+
 export const fetchToGetVideoBlob = async ({ videoUrl }: { videoUrl: string }): Promise<null | Blob> => {
     if (!videoUrl) return null
     try {

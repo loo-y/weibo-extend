@@ -1,7 +1,13 @@
 import JSZip from 'jszip'
 const FileSaver = require('file-saver')
 import _ from 'lodash'
-import { fetchToGetImageBlob, fetchToGetImageBlobByXHR, fetchToGetVideoBlobByXHR, fetchToGetLongText } from './fetches'
+import {
+    fetchToGetImageBlob,
+    fetchToGetImageBlobByXHR,
+    fetchToGetImageBlobByCloudflare,
+    fetchToGetVideoBlobByXHR,
+    fetchToGetLongText,
+} from './fetches'
 import { favIcon32 } from './constants'
 
 // watch Element by MutationObserver
@@ -453,6 +459,14 @@ export const matchImageOrVideoFromUrl = (url: string) => {
 
 // 新增补偿下载
 const getImageRetry = async ({ imageUrl, picName }: { imageUrl: string; picName?: string }) => {
+    const isVipPage = imageUrl?.includes(`zzx.sinaimg.cn`)
+    if (isVipPage) {
+        const forwardImageBlob = await fetchToGetImageBlobByCloudflare({ imageUrl })
+        if (forwardImageBlob) {
+            return forwardImageBlob
+        }
+        return null
+    }
     const picBlob = await fetchToGetImageBlobByXHR({ imageUrl: imageUrl })
     if (picBlob) {
         return picBlob

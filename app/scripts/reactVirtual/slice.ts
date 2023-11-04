@@ -394,6 +394,13 @@ export const savingMyFav = createAsyncThunk(
     }
 )
 
+export const downloadPost = createAsyncThunk(
+    'weiboExtendSlice/downloadPost',
+    async ({ uid, mblogId }: Pick<ISaveweiboQueueProps, 'uid'> & { mblogId: string }, { dispatch, getState }: any) => {
+        dispatch(updateStopBlockOthers(false))
+    }
+)
+
 export const weiboExtendSlice = createSlice({
     name: 'weiboExtendSlice',
     initialState,

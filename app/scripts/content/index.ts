@@ -96,30 +96,30 @@ const contentRun = async () => {
         $(videoParentElement).find('.hover_download_video').css({ display: 'none' })
     })
 
-    $(document).on('DOMNodeInserted', 'div.wbpro-scroller-item', function () {
-        // @ts-ignore
-        const $current = $(this)
-        if ($current.find(`.${WEC_downloadPost}`).length < 1) {
-            const $currentHeader = $current.find('header')
-            console.log(`currentHeader`, $currentHeader)
-            const $timeHref = findAnchor($currentHeader, new RegExp(/weibo\.com\/\d+(\S)+/g))
-            if ($timeHref) {
-                console.log(`href`, $timeHref.attr('href'))
-                const $parent = $timeHref.parent()
-                console.log(`$parent`, $parent.attr('class'))
-                const $downloadPostBtn = $('<div>')
-                    .addClass(`${WEC_downloadPost}`)
-                    .css({
-                        position: 'absolute',
-                        right: '20px',
-                        cursor: 'pointer',
-                    })
-                    .append('<span>')
-                    .text('下载此微博及评论')
-                $parent.append($downloadPostBtn)
-            }
-        }
-    })
+    // $(document).on('DOMNodeInserted', 'div.wbpro-scroller-item', function () {
+    //     // @ts-ignore
+    //     const $current = $(this)
+    //     if ($current.find(`.${WEC_downloadPost}`).length < 1) {
+    //         const $currentHeader = $current.find('header')
+    //         console.log(`currentHeader`, $currentHeader)
+    //         const $timeHref = findAnchor($currentHeader, new RegExp(/weibo\.com\/\d+(\S)+/g))
+    //         if ($timeHref) {
+    //             console.log(`href`, $timeHref.attr('href'))
+    //             const $parent = $timeHref.parent()
+    //             console.log(`$parent`, $parent.attr('class'))
+    //             const $downloadPostBtn = $('<div>')
+    //                 .addClass(`${WEC_downloadPost}`)
+    //                 .css({
+    //                     position: 'absolute',
+    //                     right: '20px',
+    //                     cursor: 'pointer',
+    //                 })
+    //                 .append('<span>')
+    //                 .text('下载此微博及评论')
+    //             $parent.append($downloadPostBtn)
+    //         }
+    //     }
+    // })
 }
 
 // 监听页面的加载完成事件, 注入自定义脚本到页面中

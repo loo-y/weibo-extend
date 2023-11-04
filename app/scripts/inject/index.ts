@@ -75,6 +75,25 @@ const responseReplaceList = [
             return JSON.stringify(responseJson)
         },
     },
+    {
+        urlMatch: `/ajax/statuses/vplus/checkstatus`,
+        responseModify: (responseText: string) => {
+            let responseJson: Record<string, any> = {}
+            try {
+                responseJson = JSON.parse(responseText)
+                if (!_.isEmpty(responseJson?.data)) {
+                    responseJson.data = {
+                        ...responseJson.data,
+                        result: true,
+                    }
+                }
+            } catch (e) {
+                console.log(`error`, e)
+            }
+
+            return JSON.stringify(responseJson)
+        },
+    },
 ]
 
 const requestReplaceList = [

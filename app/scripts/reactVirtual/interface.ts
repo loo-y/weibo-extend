@@ -19,4 +19,5 @@ export enum WeiboPopType {
     savingFav = `savingFav`,
     stop = `stop`,
     completed = `completed`,
+    downloadPost = `downloadPost`,
 }

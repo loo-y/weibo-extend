@@ -14,10 +14,12 @@ const fansContent = () => {
         return
     }
     if (searchParams.get(`weiboextend`)?.toLowerCase() == `downloadpost`) {
+        const matchedValues = urlPath.match(/(\d+)\/(\S+)/) || []
+        const [fullPath, uid = '', mblogId = ''] = matchedValues
         store.dispatch(
             downloadPost({
-                uid: ``,
-                mblogId: ``,
+                uid,
+                mblogId,
             })
         )
         return

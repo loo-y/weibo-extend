@@ -302,6 +302,47 @@ const SavingWeiboPopup = () => {
         )
     }
 
+    if (showWeiboPop == WeiboPopType.downloadPost) {
+        ;<div className="flex fixed p-4 inset-0 bg-black bg-opacity-30 z-[9999]">
+            <div className="bg-white absolute right-[5rem] top-[5rem] rounded-xl h-[14rem] w-[28rem] py-4 pl-8 pr-6 flex flex-col text-gray-500 gap-2">
+                <div className="title flex w-full text-2xl font-bold flex-row gap-2 mt-2">
+                    <div className="animate-bounce bg-white dark:bg-slate-800 p-2 w-10 h-10 ring-1 ring-slate-900/5 dark:ring-slate-200/20 shadow-lg rounded-full flex items-center justify-center">
+                        <svg
+                            className="w-5 h-5 text-orange-600 font-bold"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="3"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </div>
+                    <span className="">{`正在备份中 ...`}</span>
+                </div>
+                <div className="ml-1 subtitle flex w-full text-xs text-gray-500 text-opacity-70">
+                    <span>{`请勿关闭当前页面，正在抓紧备份。`}</span>
+                </div>
+                <div className="flex ml-1 mt-1 subtitle flex-row w-full text-xs text-gray-800 text-opacity-70 gap-2">
+                    <div className="">
+                        <span>{`当前微博总数：未知`}</span>
+                    </div>
+                </div>
+
+                <div className="absolute bottom-6 right-6 flex mt-3 w-full item-center justify-end">
+                    <div className="flex flex-row gap-6">
+                        <button
+                            className="relative rounded-lg bg-gray-400 px-3 py-1 text-gray-50 shadow-lg shadow-gray-400/50 hover:shadow-gray-400/50 hover:bg-gray-500  active:top-[0.5px] active:left-[0.5px]"
+                            onClick={handleStop}
+                        >
+                            停止
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
     return null
 }
 

@@ -287,3 +287,30 @@ export const fetchToGetComments = async (props: {
 
     return { data, status }
 }
+
+export const fetchToGetSinglePost = async ({ mblogId }: { mblogId: string }) => {
+    let data = null,
+        status = false
+    if (!mblogId)
+        return {
+            data,
+            status,
+        }
+    const url = `https://weibo.com/ajax/statuses/show?id=${mblogId}&locale=cn`
+    try {
+        const response = await baseFetch({
+            url,
+            method: 'GET',
+        })
+        const respJson = await response.json()
+
+        // 防止过快导致接口请求被封
+        await sleep(0.3)
+        data = respJson || {}
+        status = true
+    } catch (e) {
+        console.log(`fetchToGetComments`, e)
+    }
+
+    return { data, status }
+}

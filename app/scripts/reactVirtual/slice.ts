@@ -10,6 +10,8 @@ import {
     fetchToGetBlog,
     fetchToSearchProfile,
     fetchToGetMyFav,
+    fetchToGetSinglePost,
+    fetchToGetComments,
 } from './API'
 import { WeiboExtendState, WeiboPopType } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
@@ -398,6 +400,16 @@ export const downloadPost = createAsyncThunk(
     'weiboExtendSlice/downloadPost',
     async ({ uid, mblogId }: Pick<ISaveweiboQueueProps, 'uid'> & { mblogId: string }, { dispatch, getState }: any) => {
         dispatch(updateStopBlockOthers(false))
+        dispatch(
+            updateState({
+                showFloatingPopup: false,
+                stopSaving: false,
+                // showWeiboPop: WeiboPopType.downloadPost,
+            })
+        )
+        const singlePostRes = await fetchToGetSinglePost({ mblogId })
+        if (!_.isEmpty(singlePostRes?.data)) {
+        }
     }
 )
 

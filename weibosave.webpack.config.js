@@ -12,6 +12,7 @@ module.exports = {
     },
     entry: {
         weibosave: path.resolve(scriptPath, './weibosave'),
+        singlepost: path.resolve(scriptPath, './singlepost'),
     },
     output: {
         path: outDir,
@@ -29,6 +30,15 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './weiboSave/index.html',  // 指定 HTML 模板文件
             filename: 'index.html',  // 输出的 HTML 文件名
+            minify: {
+              collapseWhitespace: true,  // 压缩 HTML 文件中的空白字符
+              removeComments: true,  // 删除 HTML 文件中的注释
+            },
+            inject: false, // 禁止自动插入，这样会执行两遍js
+        }),
+        new HtmlWebpackPlugin({
+            template: './weiboSave/singlePost.html',  // 指定 HTML 模板文件
+            filename: 'singlePost.html',  // 输出的 HTML 文件名
             minify: {
               collapseWhitespace: true,  // 压缩 HTML 文件中的空白字符
               removeComments: true,  // 删除 HTML 文件中的注释

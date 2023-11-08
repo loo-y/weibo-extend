@@ -12,26 +12,42 @@ const singlePostRun = () => {
     const dataSource = window.comment01.data.concat(window.comment02.data).concat(window.comment03.data)
     const totalItems = dataSource.length // 总列表项数量
     const itemHeight = 100 // 列表项高度
-    const visibleItems = Math.floor( 500 /itemHeight) // 可见列表项数量
-    const bufferItems = 2 // 上下预加载的列表项数量
-
+    // const visibleItems = Math.floor( 500 / itemHeight) // 可见列表项数量
+    const bufferItems = 5 // 上下预加载的列表项数量
+    let visibleItems = $('.list-item[visiable="true"]')?.length
     console.log(`dataSource`, dataSource)
+    let firstIndex = -1, lastIndex = 0;
     function updateContent(startIndex) {
-        console.log(`startIndex`, startIndex)
+        if(!(visibleItems > 0)){
+            visibleItems = $('.list-item[visiable="true"]')?.length
+        }
+        
         const bufferIndex = Math.min(startIndex + visibleItems + bufferItems * 2, totalItems)
-        content.style.minHeight = `${bufferIndex * itemHeight}px`;
-
-        const $startListImtem = $('.list-item[notview="true"]:first');
-        console.log(`startIndex`, startIndex, dataSource[startIndex].text_raw)
-        $startListImtem.text(`${startIndex}, ${dataSource[startIndex].text_raw}`);
-        $startListImtem.css("transform", `translateY(${startIndex * itemHeight}px)`)
+        const newMinHeight = parseInt(content.style.minHeight) > bufferIndex * itemHeight ? parseInt(content.style.minHeight) : bufferIndex * itemHeight
+        content.style.minHeight = `${newMinHeight}px`;
 
 
-        const lastIndex =  Math.min(startIndex + visibleItems, totalItems)
-        const $nextListImtem = $('.list-item[notview="true"]:last');
-        console.log(`lastIndex`, lastIndex, dataSource[lastIndex].text_raw)
-        $nextListImtem.text(`${lastIndex}, ${dataSource[lastIndex].text_raw}`);
-        $nextListImtem.css("transform", `translateY(${lastIndex * itemHeight}px)`)
+        firstIndex = startIndex > 0 ? startIndex - 1 : -1
+        lastIndex =  Math.min(startIndex + visibleItems, totalItems)
+
+        console.log(`startIndex: ${startIndex}, firstIndex: ${firstIndex}, lastIndex: ${lastIndex}`)
+
+        // const $firstListImtem = $('.list-item[notview="true"]:first');
+        // const firstIndex = startIndex > 0 ? startIndex - 1 : 0
+        // console.log(`firstIndex`, firstIndex, dataSource[firstIndex].text_raw)
+        // $firstListImtem.text(`${firstIndex}, ${dataSource[firstIndex].text_raw}`);
+        // $firstListImtem.css({
+        //     transform: `translateY(${firstIndex * itemHeight}px)`
+        // })
+        // // $firstListImtem.attr("notview", false)
+
+
+        // const lastIndex =  Math.min(startIndex + visibleItems, totalItems)
+        // const $nextListImtem = $('.list-item[notview="true"]:last');
+        // console.log(`lastIndex`, lastIndex, dataSource[lastIndex].text_raw)
+        // $nextListImtem.text(`${lastIndex}, ${dataSource[lastIndex].text_raw}`);
+        // $nextListImtem.css({transform: `translateY(${lastIndex * itemHeight}px)`})
+        // $nextListImtem.attr("notview", false)
 
         // let html = ''
 
@@ -49,17 +65,75 @@ const singlePostRun = () => {
         entries.forEach(entry => {
             const listItem = entry.target
             const dataIndex = listItem.dataset.index
-
+            console.log(`handleIntersection`)
             if (entry.isIntersecting) {
                 // 列表项进入可视范围，显示内容
-                $(listItem).attr("notview", false)
+                $(listItem).attr("visiable", true)
             } else {
                 // 列表项离开可视范围，隐藏内容
                 // listItem.innerHTML = ''
-                $(listItem).attr("notview", true)
+                $(listItem).attr("visiable", false)
                 $(listItem).css("transform", "translateY(-9999px)")
             }
         })
+
+        if(firstIndex >= 0){
+            let $firstListImtem = $(`.list-item[data-index="${firstIndex}"]`)
+            if($firstListImtem){
+                console.log(`firstListImtem`, $firstListImtem)
+            }else{
+                $firstListImtem = $('.list-item[visiable="false"]:first');
+                console.log(`firstIndex`, firstIndex, dataSource[firstIndex].text_raw, $firstListImtem)
+                $firstListImtem.text(`${firstIndex}, ${dataSource[firstIndex].text_raw}`);
+                $firstListImtem.attr("data-index", firstIndex)
+            }
+            
+            $firstListImtem.css({
+                transform: `translateY(${firstIndex * itemHeight}px)`
+            })
+            
+        }
+
+
+        if(lastIndex == 0){
+            lastIndex = $('.list-item[visiable="true"]')?.length
+            
+        }
+        if(lastIndex < totalItems){
+            let $nextListImtem = $(`.list-item[data-index="${lastIndex}"]`)
+            if($nextListImtem?.length){
+                console.log(`nextListImtem`, $nextListImtem)
+            }else{
+                $nextListImtem = $('.list-item[visiable="false"]:last');
+                console.log(`lastIndex`, lastIndex, dataSource[lastIndex].text_raw)
+                $nextListImtem.text(`${lastIndex}, ${dataSource[lastIndex].text_raw}`);
+                $nextListImtem.attr("data-index", lastIndex)
+            }
+            
+            $nextListImtem.css({transform: `translateY(${lastIndex * itemHeight}px)`})
+            
+        } 
+
+        const allVisiableItems = $('.list-item');
+        let missItemIndex = generateArray(firstIndex, lastIndex)
+         _.each(allVisiableItems, item=>{
+            const dataIndex = Number($(item).attr('data-index'));
+            const isIncluded = missItemIndex.indexOf(dataIndex)
+            if(isIncluded > -1){
+                missItemIndex.splice(isIncluded, 1)
+            }
+        })
+        console.log(`missItemIndex`, missItemIndex)
+        if(!_.isEmpty(missItemIndex)){
+            _.each(missItemIndex, miss=>{
+                
+                const $newListImtem = $('.list-item[visiable="false"]:last');
+                $newListImtem.text(`${miss}, ${dataSource[miss].text_raw}`);
+                $newListImtem.css({transform: `translateY(${miss * itemHeight}px)`})
+                $newListImtem.attr("data-index", miss)
+                console.log(`miss`, miss)
+            })
+        }
     }
 
     const observerOptions = {
@@ -78,8 +152,8 @@ const singlePostRun = () => {
 
     })
 
-   
-        const endIndex = Math.min(0 + visibleItems + bufferItems, totalItems)
+        const initVisibleItems = Math.floor( 500 / itemHeight) // 可见列表项数量
+        const endIndex = Math.min(0 + initVisibleItems + bufferItems, totalItems)
         let html = ''
 
         for (let i = 0; i < endIndex; i++) {
@@ -97,74 +171,22 @@ const singlePostRun = () => {
             
         })
 
+        visibleItems = $('.list-item[visiable="true"]')?.length
+        console.log(`visibleItems`, visibleItems)
     // updateContent(0)
 })
-    // $(document).ready(function() {
-    //   const container = document.getElementById('container');
-    //   const viewport = document.querySelector('.viewport');
-    //   const content = document.querySelector('.content');
-    //   const visibleItems = 10; // 可见列表项数量
-    //   const itemHeight = 50; // 列表项高度
-    //   const bufferItems = 5; // 上下预加载的列表项数量
-    //   const dataSource = window.comment01.data.concat(window.comment02.data).concat(window.comment03.data)
-    //   const totalItems = dataSource.length; // 总列表项数量
-    //   function updateContent(startIndex) {
-    //       const listItems = document.getElementsByClassName('list-item');
-    //       const endIndex = Math.min(startIndex + visibleItems, totalItems);
-    //       for (let i = 0; i < visibleItems; i++) {
-    //         const dataIndex = startIndex + i;
-    //         const listItem = listItems[i];
-    //         if (dataIndex < endIndex) {
-    //           const data = dataSource?.[dataIndex];
-    //           if(data){
-    //               listItem.textContent = data?.text_raw || ``;
-    //               listItem.style.transform = `translateY(${i * itemHeight}px)`;
-    //           }
-    //         } else {
-    //           listItem.textContent = '';
-    //           listItem.style.transform = `translateY(0)`;
-    //         }
-    //       }
-    //       content.style.transform = `translateY(${startIndex * itemHeight}px)`;
-    //     }
-    //     function handleIntersection(entries) {
-    //       entries.forEach(entry => {
-    //         const listItem = entry.target;
-    //         const dataIndex = listItem.dataset.index;
-    //         const rect = listItem.getBoundingClientRect();
-    //         const isVisible = rect.top < container.clientHeight && rect.bottom >= 0;
-    //         if (isVisible) {
-    //           const translateYValue = Math.max(-rect.top, container.clientHeight - rect.bottom);
-    //           listItem.style.transform = `translateY(${translateYValue}px)`;
-    //         } else {
-    //           const direction = rect.top < 0 ? 'up' : 'down';
-    //           const transformValue = direction === 'up' ? 'translateY(-100%)' : 'translateY(100%)';
-    //           listItem.style.transform = transformValue;
-    //         }
-    //       });
-    //     }
-    //     const observerOptions = {
-    //       root: container,
-    //       rootMargin: '0px',
-    //       threshold: 0
-    //     };
-    //     const observer = new IntersectionObserver(handleIntersection, observerOptions);
-    //     container.addEventListener('scroll', function() {
-    //       const startIndex = Math.floor(container.scrollTop / itemHeight);
-    //       updateContent(startIndex);
-    //       const listItems = document.getElementsByClassName('list-item');
-    //       Array.from(listItems).forEach(listItem => {
-    //         observer.observe(listItem);
-    //       });
-    //     });
-    //     // 初始化可见列表项和内容
-    //     for (let i = 0; i < visibleItems; i++) {
-    //       const listItem = document.createElement('div');
-    //       listItem.classList.add('list-item');
-    //       content.appendChild(listItem);
-    //     }
-    //     updateContent(0);
-    // });
+    
 }
 
 singlePostRun()
+
+
+function generateArray(start, end) {
+    var arr = [];
+    if(start < 0) start = 0;
+    for (var i = start; i < end; i++) {
+      arr.push(i);
+    }
+    
+    return arr;
+  }

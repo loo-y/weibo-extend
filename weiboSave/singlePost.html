@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>weibo-extend</title>
+        <meta name="description" content="weibo-extend" />
+        <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
+        <!-- <link href="./style/weibosave.css" rel="stylesheet" type="text/css" /> -->
+        <style>
+            #container {
+                height: 480px;
+                overflow-y: scroll;
+                background-color: antiquewhite;
+            }
+
+            .viewport {
+                position: relative;
+                height: 100%;
+            }
+
+            .content {
+                position: relative;
+                width: 700px;
+                top: 0;
+                left: 0;
+            }
+            .list-item {
+                height: 100px;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        </style>
+    </head>
+    <body class=" " id="weibo-extend-weibosave">
+        <div class="bg-gray-100">
+            <div
+                id="weibo-extend-posts"
+                class="mx-auto my-0 w-[50rem] px-8 flex flex-col gap-6 break-words pb-10"
+            ></div>
+        </div>
+
+        <div class="border-b border-dashed border-gray-100 overflow-scroll text-gray-500 rounded text-base"></div>
+
+        <div id="container">
+            <div class="viewport">
+                <div class="content"></div>
+            </div>
+        </div>
+
+        <script src="./scripts/comment01.js" defer="defer"></script>
+        <script src="./scripts/comment02.js" defer="defer"></script>
+        <script src="./scripts/comment03.js" defer="defer"></script>
+        <script src="./scripts/singlepost.js" defer="defer"></script>
+    </body>
+</html>

@@ -473,8 +473,14 @@ const getImageRetry = async ({ imageUrl, picName }: { imageUrl: string; picName?
     }
 
     if (picName) {
+        // 临时方案
+        if (/wx\d\.sinaimg\.cn/.test(imageUrl)) {
+            return null
+        }
+
         const randomImageCDN = Math.floor(Math.random() * 3) + 1
         const retryUrl = `https://wx${randomImageCDN}.sinaimg.cn/large/${picName}`
+        console.log(`get Image retry by retryUrl`, retryUrl)
         const retryPicBlob = await fetchToGetImageBlobByXHR({ imageUrl: retryUrl })
         if (retryPicBlob) {
             return retryPicBlob

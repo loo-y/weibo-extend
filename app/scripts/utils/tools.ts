@@ -475,6 +475,13 @@ const getImageRetry = async ({ imageUrl, picName }: { imageUrl: string; picName?
     if (picName) {
         // 临时方案
         if (/wx\d\.sinaimg\.cn/.test(imageUrl)) {
+            const cfWeiboXhrImageBlob = await fetchToGetImageBlobByCloudflare({
+                imageUrl,
+                host: `weibo-xhr-image.127321.xyz`,
+            })
+            if (cfWeiboXhrImageBlob) {
+                return cfWeiboXhrImageBlob
+            }
             return null
         }
 

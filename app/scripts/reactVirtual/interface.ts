@@ -6,7 +6,7 @@ export interface WeiboExtendState extends Record<string, any> {
     showRemoveFans?: boolean
     showBlockOtherFans?: boolean
     showFloatingPopup?: boolean
-
+    onePageCount?: number
     showWeiboPop: WeiboPopType
 }
 

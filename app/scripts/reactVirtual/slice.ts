@@ -29,6 +29,7 @@ const initialState: WeiboExtendState & Record<string, any> = {
     showFloatingPopup: false,
     followersRemoved: [],
     showWeiboPop: WeiboPopType.hidden,
+    onePageCount: 100,
 }
 
 type RequestCombo = {
@@ -298,7 +299,10 @@ export const saveWeiboQueue = createAsyncThunk(
         const endTimeShortSpan = (endDate && dayjs(endDate).add(1, 'day').unix()) || undefined
         let isEnd = false
         // 获取单次保存的列表
-        const onePageCount = 100
+        const onePageCount =
+            (weiboExtendState.onePageCount && weiboExtendState.onePageCount > 0
+                ? weiboExtendState.onePageCount
+                : 100) || 100
         let onePageList: Record<string, any>[] = []
         let totalCountSaveingWeibo = 0
         for (let count = 0; count < onePageCount; ) {

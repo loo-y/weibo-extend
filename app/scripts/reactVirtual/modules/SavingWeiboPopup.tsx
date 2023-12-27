@@ -1,4 +1,5 @@
 'use client'
+import type { ChangeEvent } from 'react'
 import React, { useEffect, useState } from 'react'
 import _ from 'lodash'
 import DatepickerComp from '../components/DatepickerComp'
@@ -17,6 +18,7 @@ const SavingWeiboPopup = () => {
         currentSavingWeiboPicCount,
         currentSavingWeiboVideoCount,
         savingUid,
+        onePageCount,
     } = state || {}
     const [savingStartDate, setSavingStartDate] = useState<Date | undefined>(undefined)
     const [savingEndDate, setSavingEndDate] = useState<Date | undefined>(undefined)
@@ -101,6 +103,15 @@ const SavingWeiboPopup = () => {
         setSavingEndDate(endDate)
     }
 
+    const handleChangeOnePageCount = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event?.currentTarget?.value
+        dispatch(
+            updateState({
+                onePageCount: Number(value),
+            })
+        )
+    }
+
     if (showWeiboPop == WeiboPopType.typeSelect) {
         return (
             <div className="flex fixed p-4 inset-0 bg-black bg-opacity-30 z-[9999]">
@@ -108,38 +119,51 @@ const SavingWeiboPopup = () => {
                     <div className="title flex w-full text-lg font-bold flex-row gap-2 mt-2">
                         <span className="">{`备份微博`}</span>
                     </div>
-                    <div className="flex flex-row  text-sm gap-5 mt-2">
-                        <div className="flex items-center ">
-                            <input
-                                type="radio"
-                                className="cursor-pointer"
-                                name="saving_type"
-                                id="saving_type_all"
-                                value="0"
-                                checked={savingType == 0}
-                                onChange={() => {
-                                    handleSelectSaveingType(0)
-                                }}
-                            ></input>
-                            <label htmlFor="saving_type_all" className="ml-1 cursor-pointer">
-                                全部
-                            </label>
+                    <div className="flex flex-row w-full items-center mt-2">
+                        <div className="flex w-1/2 flex-row text-sm gap-5 ">
+                            <div className="flex items-center ">
+                                <input
+                                    type="radio"
+                                    className="cursor-pointer"
+                                    name="saving_type"
+                                    id="saving_type_all"
+                                    value="0"
+                                    checked={savingType == 0}
+                                    onChange={() => {
+                                        handleSelectSaveingType(0)
+                                    }}
+                                ></input>
+                                <label htmlFor="saving_type_all" className="ml-1 cursor-pointer">
+                                    全部
+                                </label>
+                            </div>
+                            <div className="flex items-center">
+                                <input
+                                    type="radio"
+                                    className="cursor-pointer"
+                                    name="saving_type"
+                                    id="saving_type_bydate"
+                                    value="1"
+                                    checked={savingType == 1}
+                                    onChange={() => {
+                                        handleSelectSaveingType(1)
+                                    }}
+                                ></input>
+                                <label htmlFor="saving_type_bydate" className="ml-1 cursor-pointer">
+                                    按日期
+                                </label>
+                            </div>
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex w-1/2  text-sm items-center justify-end flex-row text-right">
+                            <span className="text-sm inline-block w-28">单次打包条数：</span>
                             <input
-                                type="radio"
-                                className="cursor-pointer"
-                                name="saving_type"
-                                id="saving_type_bydate"
-                                value="1"
-                                checked={savingType == 1}
-                                onChange={() => {
-                                    handleSelectSaveingType(1)
-                                }}
+                                type="number"
+                                className="inline-block w-12 border text-right"
+                                defaultValue={onePageCount}
+                                step={20}
+                                max={1000}
+                                onChange={handleChangeOnePageCount}
                             ></input>
-                            <label htmlFor="saving_type_bydate" className="ml-1 cursor-pointer">
-                                按日期
-                            </label>
                         </div>
                     </div>
                     {savingType == 1 ? (

@@ -32,10 +32,10 @@ const LikeUserList: React.FC = () => {
             dispatch(clearRequestQueue())
             let user = displayUserList[0]
             for (let i = 0, l = displayUserList.length; i < l; i++) {
-                // 增加延时，防止触发风控
-                await sleep(1 + Math.random() * 2)
                 user = displayUserList[i]
                 dispatch(blockUser({ uid: user.uid }))
+                // 增加延时，防止触发风控
+                await sleep(1 + Math.random() * 2)
             }
             // _.each(displayUserList, async (user) => {
 
@@ -48,10 +48,10 @@ const LikeUserList: React.FC = () => {
             dispatch(clearRequestQueue())
             let user = displayUserList[0]
             for (let i = 0, l = displayUserList.length; i < l; i++) {
-                // 增加延时，防止触发风控
-                await sleep(1 + Math.random() * 2)
                 user = displayUserList[i]
                 dispatch(unblockUser({ uid: user.uid }))
+                // 增加延时，防止触发风控
+                await sleep(1 + Math.random() * 2)
             }
             // _.each(displayUserList, user => {
             //     dispatch(unblockUser({ uid: user.uid }))

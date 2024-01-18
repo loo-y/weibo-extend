@@ -15,7 +15,7 @@ import {
 } from './API'
 import { WeiboExtendState, WeiboPopType } from './interface'
 import type { AsyncThunk } from '@reduxjs/toolkit'
-import { saveBlogToZip } from '../utils/tools'
+import { saveBlogToZip, sleep } from '../utils/tools'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 
@@ -215,9 +215,12 @@ export const blockOthersFans = createAsyncThunk(
                 return true
             }
             await fetchToBlockUser({ uid: friend.idstr })
+            // 增加延时，防止触发风控
+            await sleep(2 + Math.random() * 2)
             dispatch(updateState({ fansPageBlockingUser: friend?.screen_name || friend?.name || '' }))
         }
         if (!(next_page > 0)) return true
+        await sleep(5 + Math.random() * 5)
         dispatch(blockOthersFans({ otherUid, pageIndex: pageIndex + 1 }))
         return null
     }

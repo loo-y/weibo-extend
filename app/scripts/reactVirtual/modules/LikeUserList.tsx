@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { useAppSelector, useAppDispatch } from '../hooks'
 import { blockUser, unblockUser, getWeiboExtendState, clearRequestQueue } from '../slice'
 import { UserType } from '../interface'
+import { sleep } from '../../utils/tools'
 
 const LikeUserList: React.FC = () => {
     const state = useAppSelector(getWeiboExtendState)
@@ -26,21 +27,35 @@ const LikeUserList: React.FC = () => {
         setDisplayUserList([])
     }
 
-    const handleBlockUsers = () => {
+    const handleBlockUsers = async () => {
         if (!_.isEmpty(displayUserList)) {
             dispatch(clearRequestQueue())
-            _.each(displayUserList, user => {
+            let user = displayUserList[0]
+            for (let i = 0, l = displayUserList.length; i < l; i++) {
+                // 增加延时，防止触发风控
+                await sleep(1 + Math.random() * 2)
+                user = displayUserList[i]
                 dispatch(blockUser({ uid: user.uid }))
-            })
+            }
+            // _.each(displayUserList, async (user) => {
+
+            // })
         }
     }
 
-    const handleUnBlockUsers = () => {
+    const handleUnBlockUsers = async () => {
         if (!_.isEmpty(displayUserList)) {
             dispatch(clearRequestQueue())
-            _.each(displayUserList, user => {
+            let user = displayUserList[0]
+            for (let i = 0, l = displayUserList.length; i < l; i++) {
+                // 增加延时，防止触发风控
+                await sleep(1 + Math.random() * 2)
+                user = displayUserList[i]
                 dispatch(unblockUser({ uid: user.uid }))
-            })
+            }
+            // _.each(displayUserList, user => {
+            //     dispatch(unblockUser({ uid: user.uid }))
+            // })
         }
     }
     if (_.isEmpty(displayUserList)) return null

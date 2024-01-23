@@ -162,7 +162,7 @@ export const removeFans = createAsyncThunk(
         const pageIndex = params?.pageIndex || 1
         console.log(`pageIndex`, pageIndex)
         const friendsResp = await fetchToGetMyFriends({ uid: params.uid, pageIndex })
-        const { next_page, users } = friendsResp?.data || {}
+        const { next_cursor, users } = friendsResp?.data || {}
         const friends = users?.length ? users : []
         console.log(`friends`, friends)
         if (_.isEmpty(friends)) {
@@ -182,7 +182,7 @@ export const removeFans = createAsyncThunk(
             }
         }
 
-        if (!(next_page > 0)) {
+        if (!(next_cursor > 0)) {
             dispatch(updateState({ fansPageremovingFans: '__completed__' }))
             return friends
         }
@@ -204,7 +204,7 @@ export const blockOthersFans = createAsyncThunk(
         if (!params?.otherUid) return
 
         const friendsResp = await fetchToGetOthersFriends({ uid: params.otherUid, pageIndex })
-        const { next_page, users } = friendsResp?.data || {}
+        const { next_cursor, users } = friendsResp?.data || {}
         const friends = users?.length ? users : []
         if (_.isEmpty(friends)) {
             return true
@@ -219,7 +219,7 @@ export const blockOthersFans = createAsyncThunk(
             await sleep(2 + Math.random() * 2)
             dispatch(updateState({ fansPageBlockingUser: friend?.screen_name || friend?.name || '' }))
         }
-        if (!(next_page > 0)) return true
+        if (!(next_cursor > 0)) return true
         await sleep(5 + Math.random() * 5)
         dispatch(blockOthersFans({ otherUid, pageIndex: pageIndex + 1 }))
         return null
@@ -239,7 +239,7 @@ export const unBlockOthersFans = createAsyncThunk(
         if (!params?.otherUid) return
 
         const friendsResp = await fetchToGetOthersFriends({ uid: params.otherUid, pageIndex })
-        const { next_page, users } = friendsResp?.data || {}
+        const { next_cursor, users } = friendsResp?.data || {}
         const friends = users?.length ? users : []
         if (_.isEmpty(friends)) {
             return true
@@ -253,7 +253,7 @@ export const unBlockOthersFans = createAsyncThunk(
             dispatch(updateState({ fansPageUnBlockingUser: friend?.screen_name || friend?.name || '' }))
         }
 
-        if (!(next_page > 0)) return true
+        if (!(next_cursor > 0)) return true
         dispatch(unBlockOthersFans({ otherUid, pageIndex: pageIndex + 1 }))
         return null
     }

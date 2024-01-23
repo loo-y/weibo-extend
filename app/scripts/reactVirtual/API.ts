@@ -130,7 +130,7 @@ export const fetchToGetMyFriends = async (props: IGetFriendsProps) => {
         data = await response.json()
         // 防止过快导致接口请求被封
         await sleep(0.3)
-        data = { ...(data || {}), uid, hasMore: data?.next_page > 0 }
+        data = { ...(data || {}), uid, hasMore: data?.next_cursor > 0 }
         status = true
     } catch (e) {
         console.log(`fetchToGetFriends`, e)
@@ -154,7 +154,7 @@ export const fetchToGetOthersFriends = async (props: IGetFriendsProps) => {
         data = await response.json()
         // 防止过快导致接口请求被封
         await sleep(0.3)
-        data = { ...(data || {}), uid, hasMore: data?.next_page > 0 }
+        data = { ...(data || {}), uid, hasMore: data?.next_cursor > 0 }
         status = true
     } catch (e) {
         console.log(`fetchToGetOthersFriends`, e)

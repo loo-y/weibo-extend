@@ -8,7 +8,7 @@ const FansPage: React.FC = () => {
     const dispatch = useAppDispatch()
 
     return (
-        <div className="fanspage absolute top-[4.75rem] left-1/2 -ml-[12rem] [@media(max-width:1161px)]:-ml-[76px] [@media(max-width:872px)]:left-[360px] [@media(max-width:872px)]:ml-0  z-[99]">
+        <div className="fanspage absolute top-[4.75rem] left-1/2 -ml-[12rem] [@media(max-width:1161px)]:-ml-[76px] [@media(max-width:872px)]:left-[360px] [@media(max-width:872px)]:ml-0  z-[999]">
             <RemoveMyFans />
             <BlockOthersFans />
         </div>
